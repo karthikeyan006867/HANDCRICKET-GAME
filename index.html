@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Odd or Even Cricket Game</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+</head>
+<body class="dark">
+  <div class="container" id="main-container">
+    <div class="top-controls">
+      <button onclick="toggleDifficulty()">🧠 Difficulty</button>
+      <button onclick="toggleTheme()">🎨 Change Theme</button>
+    </div>
+
+    <h2>Odd or Even Cricket Game</h2>
+
+    <div id="message-box">Welcome! Choose HEAD or TAILS to start the toss.</div>
+
+    <div class="difficulty-box hidden" id="difficulty-box">
+      <p>Select difficulty level:</p>
+      <button onclick="setDifficulty('easy')" id="easy-btn">Easy</button>
+      <button onclick="setDifficulty('medium')" id="medium-btn">Medium</button>
+      <button onclick="setDifficulty('hard')" id="hard-btn">Hard</button>
+    </div>
+
+    <div id="toss-section" class="center-buttons">
+      <button onclick="toss('head')">HEAD</button>
+      <button onclick="toss('tails')">TAILS</button>
+    </div>
+
+    <div id="choice-section" class="center-buttons hidden">
+      <p>Choose your role:</p>
+      <button onclick="setChoice('batting')">Batting</button>
+      <button onclick="setChoice('bowling')">Bowling</button>
+    </div>
+
+    <div id="game-section" class="hidden">
+      <div id="game-status"></div>
+      <div class="center-buttons">
+        <input type="number" id="player-run" min="0" max="10" placeholder="0–10" />
+        <button onclick="playRound()">Play</button>
+      </div>
+
+      <div class="choices-display">
+        <div>Your choice: <span id="player-choice-display">-</span></div>
+        <div>Computer choice: <span id="computer-choice-display">-</span></div>
+      </div>
+
+      <div class="scoreboard">
+        <div>Your Score: <span id="player-score">0</span></div>
+        <div>Computer Score: <span id="computer-score">0</span></div>
+      </div>
+    </div>
+
+    <div class="center-buttons">
+      <button onclick="resetGame()" class="reset-btn">🔁 Reset Game</button>
+      <button id="screenshot-btn" onclick="captureAndShare()" class="screenshot-btn">📸 Share Screenshot</button>
+      <a id="share-btn" target="_blank">📤 Share via WhatsApp</a>
+    </div>
+
+    <audio id="clapssound" src="https://www.soundjay.com/human/sounds/applause-01.mp3"></audio>
+    <audio id="losinghorn" src="https://www.soundjay.com/button/beep-07.mp3"></audio>
+  </div>
+
+  <div id="popup-container"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>

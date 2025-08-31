@@ -1,555 +1,87 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Odd or Even Cricket Game</title>
-  <style>
-    /* (Your CSS styles remain the same) */
-    :root {
-      --bg-color: #000;
-      --text-color: #fff;
-      --container-bg: #fff;
-      --container-text: #000;
-      --score-bg: #f1f3f5;
-    }
+# Hand Cricket Game
 
-    body.dark {
-      --bg-color: #000;
-      --text-color: #fff;
-      --container-bg: #fff;
-      --container-text: #000;
-      --score-bg: #f1f3f5;
-    }
+A fun and interactive Odd or Even Cricket Game built with HTML, CSS, and JavaScript.
 
-    body.light {
-      --bg-color: #f5f5f5;
-      --text-color: #000;
-      --container-bg: #ffffff;
-      --container-text: #000;
-      --score-bg: #e0e0e0;
-    }
+## Project Structure
 
-    body.purple {
-      --bg-color: #7F00FF;
-      --text-color: #fff;
-      --container-bg: #ffffff;
-      --container-text: #000;
-      --score-bg: #f3e9ff;
-    }
+```bash
+HANDCRICKET-GAME/
+├── index.html      # Main HTML file with game structure
+├── styles.css      # All CSS styles and animations
+├── script.js       # Game logic and functionality
+└── README.md       # Project documentation
+```
 
-    body.rainbow {
-      background: linear-gradient(270deg, red, orange, yellow, green, blue, indigo, violet, red);
-      background-size: 1400% 1400%;
-      animation: rainbowBG 12s linear infinite;
-    }
+## Files Description
 
-    @keyframes rainbowBG {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
+### index.html
 
-    @keyframes shake {
-      0% { transform: translateX(0); }
-      20% { transform: translateX(-5px); }
-      40% { transform: translateX(5px); }
-      60% { transform: translateX(-5px); }
-      80% { transform: translateX(5px); }
-      100% { transform: translateX(0); }
-    }
+- Contains the HTML structure of the game
+- Includes game sections: toss, choice selection, gameplay, and controls
+- Links to external CSS and JavaScript files
+- Uses semantic HTML elements for better accessibility
 
-    .shake {
-      animation: shake 0.5s;
-    }
+### styles.css
 
-    body {
-      background-color: var(--bg-color);
-      color: var(--text-color);
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 20px;
-      transition: background-color 0.4s ease, color 0.4s ease;
-    }
+- Contains all CSS styles for the game
+- Includes theme variables for easy customization
+- Responsive design elements
+- Animations (shake, rainbow background, fade effects)
+- Button styles and layout components
 
-    .container {
-      max-width: 490px;
-      margin: auto;
-      background-color: var(--container-bg);
-      color: var(--container-text);
-      padding: 25px 30px;
-      border-radius: 8px;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-    }
+### script.js
 
-    h2 {
-      text-align: center;
-      color: red;
-      margin-top: 10px;
-    }
+- Main game logic implemented as a JavaScript class (`HandCricketGame`)
+- Handles game state management
+- Implements different difficulty levels
+- Screenshot and sharing functionality
+- Theme switching capabilities
 
-    .top-controls {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 10px;
-    }
+## Game Features
 
-    button {
-      margin: 5px;
-      padding: 10px 18px;
-      font-size: 16px;
-      cursor: pointer;
-      border: none;
-      border-radius: 5px;
-      background: #007bff;
-      color: white;
-      transition: background-color 0.3s ease;
-    }
+- **Coin Toss**: Start the game with a head or tails choice
+- **Multiple Themes**: Dark, Light, Purple, and secret Rainbow theme
+- **Difficulty Levels**: Easy, Medium, and Hard AI opponents
+- **Screenshot Sharing**: Capture and share game results
+- **Responsive Design**: Works on different screen sizes
+- **Sound Effects**: Audio feedback for game events
+- **Keyboard Controls**: Enter to play, Shift to reset
 
-    #message-box {
-      background: #eef2f7;
-      color: #000;
-      padding: 10px;
-      border-radius: 5px;
-      margin-bottom: 15px;
-      min-height: 50px;
-      font-weight: 600;
-      text-align: center;
-    }
+## How to Play
 
-    .scoreboard {
-      margin-top: 20px;
-      display: flex;
-      justify-content: space-between;
-      font-weight: 600;
-      background: var(--score-bg);
-      color: #000;
-      padding: 10px 15px;
-      border-radius: 5px;
-    }
+1. Open `index.html` in a web browser
+2. Choose HEAD or TAILS for the coin toss
+3. Select whether to bat or bowl first
+4. Enter numbers 0-10 to play each round
+5. Try to avoid matching the computer's number when batting
+6. Try to match the computer's number when bowling
 
-    .choices-display {
-      margin-top: 15px;
-      display: flex;
-      justify-content: space-between;
-      font-weight: 500;
-      color: #000;
-    }
+## Technical Features
 
-    #player-run {
-      width: 80px;
-      padding: 6px;
-      font-size: 16px;
-      margin-right: 8px;
-    }
+- **Object-Oriented JavaScript**: Clean class-based architecture
+- **Separation of Concerns**: HTML structure, CSS styling, and JS logic in separate files
+- **Modern CSS**: CSS custom properties (variables) for theming
+- **Responsive Design**: Mobile-friendly layout
+- **Progressive Enhancement**: Works without JavaScript for basic functionality
 
-    .center-buttons {
-      text-align: center;
-      margin: 15px 0;
-    }
+## Browser Compatibility
 
-    .difficulty-box {
-      background-color: #ffe;
-      color: #000;
-      padding: 10px;
-      border-radius: 10px;
-      margin: 10px 0;
-      text-align: center;
-      display: none;
-    }
+- Modern browsers supporting ES6+ features
+- HTML5 Canvas support required for screenshot functionality
+- Web Share API for enhanced sharing (optional)
 
-    .difficulty-box button.selected {
-      background-color: #dc3545;
-    }
+## Installation
 
-    .rainbow-popup {
-      position: fixed;
-      top: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #ff0;
-      padding: 12px 25px;
-      color: #000;
-      font-weight: bold;
-      border: 2px solid #000;
-      border-radius: 10px;
-      animation: fadeOut 5s forwards;
-      z-index: 1000;
-    }
+1. Clone or download the project files
+2. Open `index.html` in a web browser
+3. No additional setup required - it's a client-side only application
 
-    @keyframes fadeOut {
-      0% { opacity: 1; }
-      80% { opacity: 1; }
-      100% { opacity: 0; display: none; }
-    }
+## Development
 
-    #game-status {
-      text-align: center;
-      font-weight: bold;
-      margin: 10px 0;
-    }
+To modify the game:
 
-    #share-btn {
-      display: none;
-      background-color: #25D366;
-    }
-  </style>
-  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+- Edit `styles.css` for visual changes
+- Modify `script.js` for game logic changes
+- Update `index.html` for structural changes
 
-</head>
-<body class="dark">
-  <div class="container" id="main-container">
-    <div class="top-controls">
-      <button onclick="toggleDifficulty()">🧠 Difficulty</button>
-      <button onclick="toggleTheme()">🎨 Change Theme</button>
-    </div>
-
-    <h2>Odd or Even Cricket Game</h2>
-
-    <div id="message-box">Welcome! Choose HEAD or TAILS to start the toss.</div>
-
-    <div class="difficulty-box" id="difficulty-box">
-      <p>Select difficulty level:</p>
-      <button onclick="setDifficulty('easy')" id="easy-btn">Easy</button>
-      <button onclick="setDifficulty('medium')" id="medium-btn">Medium</button>
-      <button onclick="setDifficulty('hard')" id="hard-btn">Hard</button>
-    </div>
-
-    <div id="toss-section" class="center-buttons">
-      <button onclick="toss('head')">HEAD</button>
-      <button onclick="toss('tails')">TAILS</button>
-    </div>
-
-    <div id="choice-section" class="center-buttons" style="display:none;">
-      <p>Choose your role:</p>
-      <button onclick="setChoice('batting')">Batting</button>
-      <button onclick="setChoice('bowling')">Bowling</button>
-    </div>
-
-    <div id="game-section" style="display:none;">
-      <div id="game-status"></div>
-      <div class="center-buttons">
-        <input type="number" id="player-run" min="0" max="10" placeholder="0–10" />
-        <button onclick="playRound()">Play</button>
-      </div>
-
-      <div class="choices-display">
-        <div>Your choice: <span id="player-choice-display">-</span></div>
-        <div>Computer choice: <span id="computer-choice-display">-</span></div>
-      </div>
-
-      <div class="scoreboard">
-        <div>Your Score: <span id="player-score">0</span></div>
-        <div>Computer Score: <span id="computer-score">0</span></div>
-      </div>
-    </div>
-
-    <div class="center-buttons">
-      <button onclick="resetGame()" style="background-color: #dc3545;">🔁 Reset Game</button>
-      <button id="screenshot-btn" onclick="captureAndShare()" style="background-color: #00a86b;">📸 Share Screenshot</button>
-      <a id="share-btn" target="_blank">📤 Share via WhatsApp</a>
-    </div>
-
-    <audio id="clapssound" src="https://www.soundjay.com/human/sounds/applause-01.mp3"></audio>
-    <audio id="losinghorn" src="https://www.soundjay.com/button/beep-07.mp3"></audio>
-  </div>
-
-  <div id="popup-container"></div>
-
-  <script>
-    const gameURL = "https://handcricket-game-g-in.onecompiler.app";
-
-    let difficulty = 'easy';
-    let themeClickCount = 0;
-    let p_run = 0, c_run = 0;
-    let playerChoice = '', gamePhase = 'toss', secondPhase = false;
-    let prevMoves = [], sameChoiceCount = 0, lastPlayerInput = null;
-
-    const playerRunInput = document.getElementById('player-run');
-    const playerScoreDisplay = document.getElementById('player-score');
-    const computerScoreDisplay = document.getElementById('computer-score');
-    const playerChoiceDisplay = document.getElementById('player-choice-display');
-    const computerChoiceDisplay = document.getElementById('computer-choice-display');
-    const messageBox = document.getElementById('message-box');
-    const gameStatus = document.getElementById('game-status');
-    const shareBtn = document.getElementById('share-btn');
-    const screenshotBtn = document.getElementById('screenshot-btn'); // Get the screenshot button
-    const container = document.getElementById('main-container');
-
-    document.addEventListener("keydown", function (e) {
-      if (e.key === "Enter") playRound();
-      if (e.key === "Shift") resetGame();
-    });
-
-    function toggleTheme() {
-      const body = document.body;
-      themeClickCount++;
-      if (themeClickCount === 9) {
-        body.className = 'rainbow';
-        showPopup("🌈 Rainbow Theme Unlocked!");
-      } else {
-        const themes = ['dark', 'light', 'purple'];
-        const current = themes.indexOf(body.className);
-        body.className = themes[(current + 1) % themes.length];
-      }
-    }
-
-    function toggleDifficulty() {
-      const box = document.getElementById("difficulty-box");
-      box.style.display = (box.style.display === "block") ? "none" : "block";
-    }
-
-    function setDifficulty(level) {
-      difficulty = level;
-      document.getElementById("difficulty-box").style.display = "none";
-      ["easy", "medium", "hard"].forEach(id => {
-        document.getElementById(`${id}-btn`).classList.remove("selected");
-      });
-      document.getElementById(`${level}-btn`).classList.add("selected");
-    }
-
-    function toss(playerToss) {
-      const compToss = Math.random() < 0.5 ? 'head' : 'tails';
-      if (playerToss === compToss) {
-        messageBox.innerHTML = `You chose <strong>${playerToss}</strong>, Computer chose <strong>${compToss}</strong>.<br>You won the toss! Choose to Bat or Bowl.`;
-        document.getElementById('toss-section').style.display = 'none';
-        document.getElementById('choice-section').style.display = 'block';
-      } else {
-        const compRole = Math.random() < 0.5 ? 'batting' : 'bowling';
-        playerChoice = (compRole === 'batting') ? 'bowling' : 'batting';
-        gamePhase = playerChoice;
-        messageBox.innerHTML = `Computer won the toss and chose to ${compRole}. You are ${playerChoice}.`;
-        document.getElementById('toss-section').style.display = 'none';
-        setTimeout(startGame, 1500);
-      }
-    }
-
-    function setChoice(choice) {
-      playerChoice = choice;
-      gamePhase = choice;
-      document.getElementById('choice-section').style.display = 'none';
-      startGame();
-    }
-
-    function startGame() {
-      document.getElementById('game-section').style.display = 'block';
-      gameStatus.textContent = `You are ${playerChoice}${secondPhase ? " (2nd Innings)" : ""}`;
-      playerRunInput.focus();
-    }
-
-    function generateComputerMove() {
-      if (difficulty === 'easy') return Math.floor(Math.random() * 11);
-      if (difficulty === 'medium') {
-        const bias = Math.random() < 0.3 ? prevMoves[prevMoves.length - 1] || Math.floor(Math.random() * 11) : Math.floor(Math.random() * 11);
-        return Math.max(0, Math.min(10, bias));
-      }
-      if (difficulty === 'hard') {
-        const freq = {};
-        prevMoves.forEach(n => freq[n] = (freq[n] || 0) + 1);
-        const sorted = Object.entries(freq).sort((a,b)=>b[1]-a[1]);
-        const predict = sorted.length ? parseInt(sorted[0][0]) : Math.floor(Math.random() * 11);
-        return Math.max(0, Math.min(10, predict + (Math.random() < 0.5 ? 0 : (Math.random() < 0.5 ? 1 : -1))));
-      }
-    }
-
-    function playRound() {
-      const val = parseInt(playerRunInput.value);
-      if (isNaN(val) || val < 0 || val > 10) {
-        messageBox.innerText = "Enter a number between 0 and 10.";
-        return;
-      }
-
-      if (val === lastPlayerInput) {
-        sameChoiceCount++;
-        if (sameChoiceCount === 3) showPopup("⚠ Warning: Don't repeat the same number!");
-        if (sameChoiceCount === 4) showPopup("😬 Be careful! Repeating again will get you OUT!");
-      } else {
-        sameChoiceCount = 1;
-        lastPlayerInput = val;
-      }
-
-      if (sameChoiceCount >= 5 && gamePhase === 'batting') {
-        messageBox.innerHTML = "❌ You used the same number 5 times! You're out!";
-        document.getElementById('losinghorn').play();
-        animateOut();
-        if (!secondPhase) {
-          secondPhase = true;
-          playerChoice = 'bowling';
-          gamePhase = 'bowling';
-          setTimeout(startGame, 1500);
-        } else endGame();
-        playerRunInput.value = '';
-        return;
-      }
-
-      const comp = generateComputerMove();
-      const isOut = val === comp;
-      prevMoves.push(val);
-      playerChoiceDisplay.textContent = val;
-      computerChoiceDisplay.textContent = comp;
-
-      if (gamePhase === 'batting') {
-        if (isOut) {
-          document.getElementById('losinghorn').play();
-          animateOut();
-          if (!secondPhase) {
-            secondPhase = true;
-            playerChoice = 'bowling';
-            gamePhase = 'bowling';
-            messageBox.innerText = "You are out! Now Bowling – Defend your score!";
-            setTimeout(startGame, 1000);
-          } else endGame();
-        } else {
-          p_run += val === 0 ? comp : val;
-          updateScores();
-          if (secondPhase && p_run > c_run) win();
-        }
-      } else {
-        if (isOut) {
-          document.getElementById('losinghorn').play();
-          animateOut();
-          if (!secondPhase) {
-            secondPhase = true;
-            playerChoice = 'batting';
-            gamePhase = 'batting';
-            messageBox.innerText = "Computer is out! Now Batting – Chase the score!";
-            setTimeout(startGame, 1000);
-          } else endGame();
-        } else {
-          c_run += comp;
-          updateScores();
-          if (secondPhase && c_run > p_run) lose();
-        }
-      }
-
-      playerRunInput.value = '';
-    }
-
-    function updateScores() {
-      playerScoreDisplay.textContent = p_run;
-      computerScoreDisplay.textContent = c_run;
-    }
-
-    function endGame() {
-      let result = `🏁 Game Over!<br>Your Score: <strong>${p_run}</strong><br>Computer Score: <strong>${c_run}</strong><br>`;
-      if (p_run > c_run) {
-        result += "🎉 You win!";
-        playSound('win');
-      } else if (c_run > p_run) {
-        result += "💔 You lose!";
-        playSound('lose');
-      } else {
-        result += "🤝 It's a tie!";
-      }
-      messageBox.innerHTML = result;
-      document.getElementById('game-section').style.display = 'none';
-      //captureAndShare(); // Remove automatic capture at end
-    }
-
-    function win() {
-      endGame();
-    }
-
-    function lose() {
-      endGame();
-    }
-
-    function playSound(type) {
-      document.getElementById(type === 'win' ? 'clapssound' : 'losinghorn').play();
-    }
-
-    function resetGame() {
-      p_run = 0; c_run = 0; secondPhase = false;
-      gamePhase = 'toss'; prevMoves = [];
-      sameChoiceCount = 0; lastPlayerInput = null;
-      updateScores();
-      playerChoiceDisplay.textContent = "-";
-      computerChoiceDisplay.textContent = "-";
-      messageBox.textContent = "Welcome! Choose HEAD or TAILS to start the toss.";
-      gameStatus.textContent = '';
-      document.getElementById('game-section').style.display = 'none';
-      document.getElementById('toss-section').style.display = 'block';
-      document.getElementById('choice-section').style.display = 'none';
-      shareBtn.style.display = "none";
-    }
-
-    function showPopup(message) {
-      const popup = document.createElement("div");
-      popup.className = "rainbow-popup";
-      popup.innerText = message;
-      document.getElementById("popup-container").appendChild(popup);
-      setTimeout(() => popup.remove(), 6000);
-    }
-
-    function animateOut() {
-      container.classList.add("shake");
-      setTimeout(() => container.classList.remove("shake"), 600);
-    }
-
-    function captureAndShare() {
-      console.log("captureAndShare() called");
-      screenshotBtn.disabled = true; // Disable button immediately
-
-      html2canvas(document.getElementById('main-container'), {
-        useCORS: true,
-        allowTaint: true,
-        logging: true,
-        //scale: 2 // Increase scale for higher resolution
-      })
-      .then(canvas => {
-        console.log("html2canvas succeeded");
-        try {
-          shareImageWhatsApp(canvas.toDataURL('image/png'));
-        } catch (shareError) {
-          console.error("Error sharing via WhatsApp:", shareError);
-          alert("Error sharing. See console.");
-        }
-      })
-      .catch(error => {
-        console.error("html2canvas failed:", error);
-        alert("Screenshot failed. See console.");
-      })
-      .finally(() => {
-        screenshotBtn.disabled = false; // Re-enable button in all cases
-      });
-    }
-
-    function shareImageWhatsApp(imgData) {
-      console.log("shareImageWhatsApp() called");
-
-      if (!imgData) {
-        console.error("No image data to share.");
-        alert("No image data to share.");
-        return;
-      }
-
-      // Check if Web Share API is supported
-      if (navigator.share) {
-        console.log("Web Share API is supported");
-        // Convert base64 to blob
-        const byteString = atob(imgData.split(',')[1]);
-        const mimeString = imgData.split(',')[0].split(':')[1].split(';')[0];
-        const ab = new ArrayBuffer(byteString.length);
-        const ia = new Uint8Array(ab);
-        for (let i = 0; i < byteString.length; i++) {
-          ia[i] = byteString.charCodeAt(i);
-        }
-        const blob = new Blob([ab], { type: mimeString });
-        const file = new File([blob], "game_screenshot.png", { type: mimeString });
-
-        navigator.share({
-          files: [file],
-          title: 'Odd or Even Cricket Game Result',
-          text: 'Check out my score!',
-        })
-        .then(() => console.log('Shared successfully'))
-        .catch((error) => console.error('Error sharing using Web Share API:', error));
-      } else {
-        console.log("Web Share API not supported");
-        // Fallback to opening in a new tab
-        window.open(imgData, '_blank');
-      }
-    }
-  </script>
-</body>
-</html>
+The code is well-commented and organized for easy maintenance and extension.

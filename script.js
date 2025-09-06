@@ -13,7 +13,8 @@ class HandCricketGame {
     this.prevMoves = [];
     this.sameChoiceCount = 0;
     this.lastPlayerInput = null;
-    
+    this.target = null; // Track target score for second innings
+
     this.initializeElements();
     this.bindEvents();
   }
@@ -96,20 +97,22 @@ class HandCricketGame {
 
   generateComputerMove() {
     if (this.difficulty === 'easy') return Math.floor(Math.random() * 11);
-    
+
     if (this.difficulty === 'medium') {
-      const bias = Math.random() < 0.3 ? 
-        this.prevMoves[this.prevMoves.length - 1] || Math.floor(Math.random() * 11) : 
+      const bias = Math.random() < 0.3 ?
+        this.prevMoves[this.prevMoves.length - 1] || Math.floor(Math.random() * 11) :
         Math.floor(Math.random() * 11);
       return Math.max(0, Math.min(10, bias));
     }
-    
+
+    // IMPOSSIBLE HARD LEVEL: Computer always matches the player's input
     if (this.difficulty === 'hard') {
-      const freq = {};
-      this.prevMoves.forEach(n => freq[n] = (freq[n] || 0) + 1);
-      const sorted = Object.entries(freq).sort((a, b) => b[1] - a[1]);
-      const predict = sorted.length ? parseInt(sorted[0][0]) : Math.floor(Math.random() * 11);
-      return Math.max(0, Math.min(10, predict + (Math.random() < 0.5 ? 0 : (Math.random() < 0.5 ? 1 : -1))));
+      // Get player's current input from the input box
+      let playerInput = this.playerRunInput.value;
+      if (playerInput === "" || playerInput === null) {
+        return Math.floor(Math.random() * 11);
+      }
+      return parseInt(playerInput);
     }
   }
 
@@ -129,16 +132,23 @@ class HandCricketGame {
       this.lastPlayerInput = val;
     }
 
+    // OUT by repetition rule
     if (this.sameChoiceCount >= 5 && this.gamePhase === 'batting') {
       this.messageBox.innerHTML = "❌ You used the same number 5 times! You're out!";
       document.getElementById('losinghorn').play();
       this.animateOut();
       if (!this.secondPhase) {
+        // First innings ends, set target and switch role
+        this.target = this.p_run;
         this.secondPhase = true;
         this.playerChoice = 'bowling';
         this.gamePhase = 'bowling';
-        setTimeout(() => this.startGame(), 1500);
-      } else this.endGame();
+        this.messageBox.innerText = `You are out! Now Bowling – Defend your score (${this.target})!`;
+        setTimeout(() => this.startGame(), 1000);
+      } else {
+        // Second innings out, check for win/tie/loss
+        this.checkSecondInningsEnd(true);
+      }
       this.playerRunInput.value = '';
       return;
     }
@@ -149,41 +159,87 @@ class HandCricketGame {
     this.playerChoiceDisplay.textContent = val;
     this.computerChoiceDisplay.textContent = comp;
 
+    // Batting
     if (this.gamePhase === 'batting') {
       if (isOut) {
         document.getElementById('losinghorn').play();
         this.animateOut();
         if (!this.secondPhase) {
+          // End of first innings
+          this.target = this.p_run;
           this.secondPhase = true;
           this.playerChoice = 'bowling';
           this.gamePhase = 'bowling';
-          this.messageBox.innerText = "You are out! Now Bowling – Defend your score!";
+          this.messageBox.innerText = `You are out! Now Bowling – Defend your score (${this.target})!`;
           setTimeout(() => this.startGame(), 1000);
-        } else this.endGame();
+        } else {
+          // Second innings out
+          this.checkSecondInningsEnd(true);
+        }
       } else {
         this.p_run += val === 0 ? comp : val;
         this.updateScores();
-        if (this.secondPhase && this.p_run > this.c_run) this.win();
+        // If second innings, check if player exceeded target
+        if (this.secondPhase) {
+          if (this.p_run > this.c_run) {
+            this.win();
+            return;
+          } else if (this.p_run === this.c_run) {
+            this.endGame('tie');
+            return;
+          }
+        }
       }
-    } else {
+    }
+    // Bowling
+    else {
       if (isOut) {
         document.getElementById('losinghorn').play();
         this.animateOut();
         if (!this.secondPhase) {
+          // End of first innings
+          this.target = this.c_run;
           this.secondPhase = true;
           this.playerChoice = 'batting';
           this.gamePhase = 'batting';
-          this.messageBox.innerText = "Computer is out! Now Batting – Chase the score!";
+          this.messageBox.innerText = `Computer is out! Now Batting – Chase the score (${this.target})!`;
           setTimeout(() => this.startGame(), 1000);
-        } else this.endGame();
+        } else {
+          // Second innings out
+          this.checkSecondInningsEnd(true);
+        }
       } else {
         this.c_run += comp;
         this.updateScores();
-        if (this.secondPhase && this.c_run > this.p_run) this.lose();
+        // If second innings, check if computer exceeded target
+        if (this.secondPhase) {
+          if (this.c_run > this.p_run) {
+            this.lose();
+            return;
+          } else if (this.c_run === this.p_run) {
+            this.endGame('tie');
+            return;
+          }
+        }
       }
     }
 
     this.playerRunInput.value = '';
+  }
+
+  // Checks win/loss/tie after out in second innings
+  checkSecondInningsEnd(isOut) {
+    if (this.playerChoice === 'batting') {
+      // Player chasing
+      if (this.p_run > this.target) this.win();
+      else if (this.p_run === this.target) this.endGame('tie');
+      else this.lose();
+    } else {
+      // Computer chasing
+      if (this.c_run > this.target) this.lose();
+      else if (this.c_run === this.target) this.endGame('tie');
+      else this.win();
+    }
   }
 
   updateScores() {
@@ -191,27 +247,28 @@ class HandCricketGame {
     this.computerScoreDisplay.textContent = this.c_run;
   }
 
-  endGame() {
-    let result = `🏁 Game Over!<br>Your Score: <strong>${this.p_run}</strong><br>Computer Score: <strong>${this.c_run}</strong><br>`;
-    if (this.p_run > this.c_run) {
-      result += "🎉 You win!";
+  // Accepts optional result: 'win', 'lose', 'tie'
+  endGame(result = null) {
+    let resultText = `🏁 Game Over!<br>Your Score: <strong>${this.p_run}</strong><br>Computer Score: <strong>${this.c_run}</strong><br>`;
+    if (result === 'win' || (this.p_run > this.c_run && !result)) {
+      resultText += "🎉 You win!";
       this.playSound('win');
-    } else if (this.c_run > this.p_run) {
-      result += "💔 You lose!";
+    } else if (result === 'lose' || (this.c_run > this.p_run && !result)) {
+      resultText += "💔 You lose!";
       this.playSound('lose');
     } else {
-      result += "🤝 It's a tie!";
+      resultText += "🤝 It's a tie!";
     }
-    this.messageBox.innerHTML = result;
+    this.messageBox.innerHTML = resultText;
     document.getElementById('game-section').classList.add('hidden');
   }
 
   win() {
-    this.endGame();
+    this.endGame('win');
   }
 
   lose() {
-    this.endGame();
+    this.endGame('lose');
   }
 
   playSound(type) {
@@ -222,6 +279,7 @@ class HandCricketGame {
     this.p_run = 0;
     this.c_run = 0;
     this.secondPhase = false;
+    this.target = null;
     this.gamePhase = 'toss';
     this.prevMoves = [];
     this.sameChoiceCount = 0;
@@ -251,7 +309,6 @@ class HandCricketGame {
   }
 
   captureAndShare() {
-    console.log("captureAndShare() called");
     this.screenshotBtn.disabled = true;
 
     html2canvas(document.getElementById('main-container'), {
@@ -260,16 +317,13 @@ class HandCricketGame {
       logging: true,
     })
     .then(canvas => {
-      console.log("html2canvas succeeded");
       try {
         this.shareImageWhatsApp(canvas.toDataURL('image/png'));
       } catch (shareError) {
-        console.error("Error sharing via WhatsApp:", shareError);
         alert("Error sharing. See console.");
       }
     })
     .catch(error => {
-      console.error("html2canvas failed:", error);
       alert("Screenshot failed. See console.");
     })
     .finally(() => {
@@ -278,16 +332,12 @@ class HandCricketGame {
   }
 
   shareImageWhatsApp(imgData) {
-    console.log("shareImageWhatsApp() called");
-
     if (!imgData) {
-      console.error("No image data to share.");
       alert("No image data to share.");
       return;
     }
 
     if (navigator.share) {
-      console.log("Web Share API is supported");
       const byteString = atob(imgData.split(',')[1]);
       const mimeString = imgData.split(',')[0].split(':')[1].split(';')[0];
       const ab = new ArrayBuffer(byteString.length);
@@ -303,10 +353,9 @@ class HandCricketGame {
         title: 'Odd or Even Cricket Game Result',
         text: 'Check out my score!',
       })
-      .then(() => console.log('Shared successfully'))
-      .catch((error) => console.error('Error sharing using Web Share API:', error));
+      .then(() => {})
+      .catch(() => {});
     } else {
-      console.log("Web Share API not supported");
       window.open(imgData, '_blank');
     }
   }

@@ -13,7 +13,7 @@ class HandCricketGame {
     this.prevMoves = [];
     this.sameChoiceCount = 0;
     this.lastPlayerInput = null;
-    this.target = null; // Track target score for second innings
+    this.target = null;
 
     this.initializeElements();
     this.bindEvents();
@@ -105,14 +105,12 @@ class HandCricketGame {
       return Math.max(0, Math.min(10, bias));
     }
 
-    // IMPOSSIBLE HARD LEVEL: Computer always matches the player's input
     if (this.difficulty === 'hard') {
-      // Get player's current input from the input box
-      let playerInput = this.playerRunInput.value;
-      if (playerInput === "" || playerInput === null) {
-        return Math.floor(Math.random() * 11);
-      }
-      return parseInt(playerInput);
+      const freq = {};
+      this.prevMoves.forEach(n => freq[n] = (freq[n] || 0) + 1);
+      const sorted = Object.entries(freq).sort((a, b) => b[1] - a[1]);
+      const predict = sorted.length ? parseInt(sorted[0][0]) : Math.floor(Math.random() * 11);
+      return Math.max(0, Math.min(10, predict + (Math.random() < 0.5 ? 0 : (Math.random() < 0.5 ? 1 : -1))));
     }
   }
 
@@ -174,18 +172,18 @@ class HandCricketGame {
           setTimeout(() => this.startGame(), 1000);
         } else {
           // Second innings out
-          this.checkSecondInningsEnd(true);
+          this.checkSecondInningsEnd(true); // <--- FIXED LOGIC
         }
       } else {
         this.p_run += val === 0 ? comp : val;
         this.updateScores();
-        // If second innings, check if player exceeded target
+        // If second innings, check if player reached/exceeded target
         if (this.secondPhase) {
           if (this.p_run > this.c_run) {
             this.win();
             return;
           } else if (this.p_run === this.c_run) {
-            this.endGame('tie');
+            this.win(); // <--- FIXED LOGIC: WIN if reach target before getting out
             return;
           }
         }
@@ -206,18 +204,18 @@ class HandCricketGame {
           setTimeout(() => this.startGame(), 1000);
         } else {
           // Second innings out
-          this.checkSecondInningsEnd(true);
+          this.checkSecondInningsEnd(true); // <--- FIXED LOGIC
         }
       } else {
         this.c_run += comp;
         this.updateScores();
-        // If second innings, check if computer exceeded target
+        // If second innings, check if computer reached/exceeded target
         if (this.secondPhase) {
           if (this.c_run > this.p_run) {
             this.lose();
             return;
           } else if (this.c_run === this.p_run) {
-            this.endGame('tie');
+            this.lose(); // <--- FIXED LOGIC: Computer wins if it reaches target before getting out
             return;
           }
         }
@@ -231,13 +229,11 @@ class HandCricketGame {
   checkSecondInningsEnd(isOut) {
     if (this.playerChoice === 'batting') {
       // Player chasing
-      if (this.p_run > this.target) this.win();
-      else if (this.p_run === this.target) this.endGame('tie');
+      if (this.p_run === this.target) this.endGame('tie');
       else this.lose();
     } else {
       // Computer chasing
-      if (this.c_run > this.target) this.lose();
-      else if (this.c_run === this.target) this.endGame('tie');
+      if (this.c_run === this.target) this.endGame('tie');
       else this.win();
     }
   }
@@ -367,35 +363,27 @@ document.addEventListener('DOMContentLoaded', () => {
   game = new HandCricketGame();
 });
 
-// Global functions for HTML onclick handlers
 function toggleTheme() {
   game.toggleTheme();
 }
-
 function toggleDifficulty() {
   game.toggleDifficulty();
 }
-
 function setDifficulty(level) {
   game.setDifficulty(level);
 }
-
 function toss(playerToss) {
   game.toss(playerToss);
 }
-
 function setChoice(choice) {
   game.setChoice(choice);
 }
-
 function playRound() {
   game.playRound();
 }
-
 function resetGame() {
   game.resetGame();
 }
-
 function captureAndShare() {
   game.captureAndShare();
 }

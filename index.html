@@ -1,138 +1,149 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Odd or Even Cricket Game</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f4f4f4;
-      text-align: center;
-      margin: 0;
-      padding: 0;
-    }
-    .container {
-      max-width: 600px;
-      margin: 50px auto;
-      padding: 20px;
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.2);
-    }
-    h2 { margin-bottom: 20px; }
-    input, button {
-      padding: 10px;
-      margin: 10px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-    }
-    button {
-      cursor: pointer;
-      background: #4CAF50;
-      color: white;
-      border: none;
-    }
-    #gameSection { display: none; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Odd or Even Cricket Game</title>
+<style>
+body { font-family: Arial; text-align:center; background:#f4f4f4; margin:0; padding:0; }
+.container { max-width: 600px; margin:50px auto; padding:20px; background:#fff; border-radius:12px; box-shadow:0 0 15px rgba(0,0,0,0.2);}
+input, button { padding:10px; margin:10px; border-radius:6px; border:1px solid #ccc;}
+button { cursor:pointer; background:#4CAF50; color:#fff; border:none;}
+.hidden { display:none; }
+#gameLog { text-align:left; margin-top:10px; max-height:200px; overflow-y:auto;}
+</style>
 </head>
 <body>
 
-  <div class="container" id="loginSection">
-    <h2>Login to Play</h2>
-    <input type="text" id="playerName" placeholder="Enter your name"><br>
-    <input type="email" id="playerEmail" placeholder="Enter your email"><br>
-    <button onclick="loginPlayer()">Login</button>
-    <p id="status"></p>
-  </div>
+<div class="container" id="loginSection">
+  <h2>Login to Play</h2>
+  <input type="text" id="playerName" placeholder="Enter your name"><br>
+  <input type="email" id="playerEmail" placeholder="Enter your email"><br>
+  <button onclick="loginPlayer()">Login</button>
+  <p id="status"></p>
+</div>
 
-  <div class="container" id="gameSection">
-    <h2>Odd or Even Cricket Game</h2>
-    <p id="turnInfo">Choose a number (1–6)</p>
-    <input type="number" id="playerInput" min="1" max="6">
-    <button onclick="playTurn()">Play</button>
-    <p id="gameLog"></p>
-    <p id="finalResult"></p>
-  </div>
+<div class="container hidden" id="gameSection">
+  <h2>Odd or Even Cricket Game</h2>
+  <p id="turnInfo">Enter a number (0–10)</p>
+  <input type="number" id="playerInput" min="0" max="10" placeholder="0–10">
+  <button onclick="playTurn()">Play</button>
+  <div id="gameLog"></div>
+  <p id="finalResult"></p>
+  <button onclick="resetGame()">Restart Game</button>
+</div>
 
-  <script>
-    const SHEET_URL = "https://script.google.com/macros/s/AKfycbyZUq54BgETfe1Ro9eTDrGv-FoWPvo_Kdis33knPvJm-FzhW1jHSFGnaQoewCU_HhSBqg/exec";
-    let playerName = "";
-    let playerEmail = "";
-    let playerScore = 0;
-    let gameOver = false;
+<script>
+const SHEET_URL = "https://script.google.com/macros/s/AKfycbx-Y01Ya_oGEfw5YjtkQ9bAcXOxQxNTByLbEmj4a7nY5huwfUnv0LLcba4ySI2_Bit67w/exec";
 
-    function loginPlayer() {
-      const name = document.getElementById("playerName").value;
-      const email = document.getElementById("playerEmail").value;
-      if (!name || !email) {
-        alert("Enter name and email");
-        return;
-      }
-      playerName = name;
-      playerEmail = email;
-      const device = navigator.userAgent;
+let playerName = "";
+let playerEmail = "";
+let playerScore = 0;
+let computerScore = 0;
+let gamePhase = "toss"; // toss -> first innings -> second innings
+let playerRole = ""; // batting/bowling
+let targetScore = 0;
+let secondInnings = false;
+let gameOver = false;
 
-      fetch(SHEET_URL, {
-        method: "POST",
-        mode: "no-cors", // required to avoid CORS block
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: name,
-          email: email,
-          device: device,
-          score: "Not Played Yet"
-        })
-      })
-      .then(() => {
-        document.getElementById("status").innerText = "✅ Login success!";
-        document.getElementById("loginSection").style.display = "none";
-        document.getElementById("gameSection").style.display = "block";
-      })
-      .catch(err => {
-        document.getElementById("status").innerText = "❌ Login failed: " + err;
-      });
-    }
+// --- LOGIN ---
+function loginPlayer() {
+  const name = document.getElementById("playerName").value;
+  const email = document.getElementById("playerEmail").value;
+  if(!name || !email){ alert("Enter Name & Email"); return;}
+  playerName = name; playerEmail = email;
 
-    function playTurn() {
-      if (gameOver) return;
-      const playerChoice = parseInt(document.getElementById("playerInput").value);
-      if (isNaN(playerChoice) || playerChoice < 1 || playerChoice > 6) {
-        alert("Enter a number between 1 and 6!");
-        return;
-      }
-      const compChoice = Math.floor(Math.random() * 6) + 1;
-      let log = `You: ${playerChoice} | Computer: ${compChoice}<br>`;
-      if (playerChoice === compChoice) {
-        log += "❌ OUT! Game Over.";
-        gameOver = true;
-        document.getElementById("finalResult").innerHTML = "Your Final Score: " + playerScore;
-        logScore(playerScore);
-      } else {
-        playerScore += playerChoice;
-        log += `✅ Runs Scored! Current Score: ${playerScore}`;
-      }
-      document.getElementById("gameLog").innerHTML += log + "<br>";
-    }
+  fetch(SHEET_URL, {
+    method:"POST",
+    mode:"no-cors",
+    headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify({ name, email, device:navigator.userAgent, score:"Not Played Yet" })
+  }).then(()=>{
+    document.getElementById("status").innerText="✅ Login Success!";
+    document.getElementById("loginSection").classList.add("hidden");
+    document.getElementById("gameSection").classList.remove("hidden");
+    document.getElementById("turnInfo").innerText="Choose HEAD or TAILS for Toss";
+  }).catch(err=>{
+    document.getElementById("status").innerText="❌ Login Failed";
+  });
+}
 
-    function logScore(finalScore) {
-      fetch(SHEET_URL, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: playerName,
-          email: playerEmail,
-          device: navigator.userAgent,
-          score: finalScore
-        })
-      })
-      .then(() => {
-        console.log("Score logged successfully");
-      })
-      .catch(err => {
-        console.error("Error logging score:", err);
-      });
-    }
-  </script>
+// --- GAME LOGIC ---
+function tossChoice(choice){
+  const comp = Math.random()<0.5?"HEAD":"TAILS";
+  if(choice===comp){
+    playerRole = prompt("You won the toss! Choose your role: batting or bowling","batting") || "batting";
+    alert(`Computer chose ${comp}. You are ${playerRole}`);
+  } else {
+    playerRole = comp==="HEAD"?"bowling":"batting";
+    alert(`Computer won toss. You are ${playerRole}`);
+  }
+  gamePhase = playerRole;
+  document.getElementById("turnInfo").innerText=`You are ${playerRole}. Enter 0–10`;
+}
+
+function playTurn() {
+  if(gameOver) return;
+  const playerNum = parseInt(document.getElementById("playerInput").value);
+  if(isNaN(playerNum)||playerNum<0||playerNum>10){ alert("0–10 only"); return;}
+  const compNum = Math.floor(Math.random()*11);
+  let logEntry = `You: ${playerNum} | Computer: ${compNum}<br>`;
+
+  if(gamePhase==="batting"){
+    if(playerNum===compNum){
+      logEntry+="❌ OUT!";
+      if(!secondInnings){
+        targetScore = playerScore;
+        secondInnings=true;
+        gamePhase="bowling";
+        computerScore=0;
+        document.getElementById("turnInfo").innerText=`You are bowling. Defend target ${targetScore}`;
+      } else { endGame(); }
+    } else { playerScore+=playerNum; }
+  } else { // bowling
+    if(playerNum===compNum){
+      logEntry+="💥 Computer OUT!";
+      if(!secondInnings){
+        targetScore = computerScore;
+        secondInnings=true;
+        gamePhase="batting";
+        playerScore=0;
+        document.getElementById("turnInfo").innerText=`You are batting. Chase target ${targetScore}`;
+      } else { endGame(); }
+    } else { computerScore+=compNum; }
+  }
+
+  document.getElementById("gameLog").innerHTML+=logEntry;
+  document.getElementById("playerInput").value="";
+}
+
+function endGame(){
+  gameOver=true;
+  let resultText="";
+  if(playerScore>computerScore){ resultText="🎉 You Win!"; }
+  else if(playerScore<computerScore){ resultText="💔 You Lose!"; }
+  else{ resultText="🤝 It's a Tie!"; }
+
+  document.getElementById("finalResult").innerText=`Final Score - You: ${playerScore} | Computer: ${computerScore} | ${resultText}`;
+  logScore(playerScore);
+}
+
+function logScore(finalScore){
+  fetch(SHEET_URL,{
+    method:"POST",
+    mode:"no-cors",
+    headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify({ name:playerName, email:playerEmail, device:navigator.userAgent, score:finalScore })
+  }).then(()=>console.log("Score logged"))
+  .catch(err=>console.error("Error logging score",err));
+}
+
+function resetGame(){
+  playerScore=0; computerScore=0; secondInnings=false; gamePhase="toss"; gameOver=false;
+  document.getElementById("gameLog").innerHTML="";
+  document.getElementById("finalResult").innerText="";
+  document.getElementById("turnInfo").innerText="Choose HEAD or TAILS for Toss";
+}
+</script>
 </body>
 </html>

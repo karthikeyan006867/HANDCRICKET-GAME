@@ -13,8 +13,8 @@ app.use(express.json());
 // Helper to read students
 function readStudents() {
   if (!fs.existsSync(DATA_FILE)) return [];
-  const data = fs.readFileSync(DATA_FILE);
-  return JSON.parse(data);
+  const data = fs.readFileSync(DATA_FILE, 'utf-8');
+  return data ? JSON.parse(data) : [];
 }
 
 // Helper to write students
@@ -37,6 +37,7 @@ app.post('/api/students', (req, res) => {
   const newStudent = { id: Date.now(), name, age, class: studentClass };
   students.push(newStudent);
   writeStudents(students);
+  console.log('Student added:', newStudent);
   res.status(201).json(newStudent);
 });
 

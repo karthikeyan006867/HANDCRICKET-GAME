@@ -1,149 +1,139 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Odd or Even Cricket Game</title>
-<style>
-body { font-family: Arial; text-align:center; background:#f4f4f4; margin:0; padding:0; }
-.container { max-width: 600px; margin:50px auto; padding:20px; background:#fff; border-radius:12px; box-shadow:0 0 15px rgba(0,0,0,0.2);}
-input, button { padding:10px; margin:10px; border-radius:6px; border:1px solid #ccc;}
-button { cursor:pointer; background:#4CAF50; color:#fff; border:none;}
-.hidden { display:none; }
-#gameLog { text-align:left; margin-top:10px; max-height:200px; overflow-y:auto;}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Management System</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f4f4f9; padding: 20px; }
+    .container { max-width: 900px; margin: auto; background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px #aaa; }
+    h2 { text-align: center; color: #333; }
+    input, textarea, select, button { width: 100%; padding: 10px; margin: 5px 0; border-radius: 5px; border: 1px solid #ccc; }
+    button { background-color: #28a745; color: white; font-weight: bold; border: none; cursor: pointer; }
+    button:hover { background-color: #218838; }
+    table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+    th { background: #f2f2f2; }
+    .action-btn { width: auto; padding: 5px 10px; margin: 2px; cursor: pointer; border-radius: 5px; border: none; }
+    .edit-btn { background: #ffc107; color: #000; }
+    .delete-btn { background: #dc3545; color: #fff; }
+  </style>
 </head>
 <body>
+  <div class="container">
+    <h2>Student Management System</h2>
 
-<div class="container" id="loginSection">
-  <h2>Login to Play</h2>
-  <input type="text" id="playerName" placeholder="Enter your name"><br>
-  <input type="email" id="playerEmail" placeholder="Enter your email"><br>
-  <button onclick="loginPlayer()">Login</button>
-  <p id="status"></p>
-</div>
+    <form id="studentForm">
+      <input type="text" id="name" placeholder="Full Name" required>
+      <input type="text" id="roll" placeholder="Roll Number" required>
+      <input type="text" id="class" placeholder="Class" required>
+      <input type="number" id="age" placeholder="Age" required>
+      <input type="text" id="contact" placeholder="Contact Number" required>
+      <textarea id="marks" placeholder="Marks (e.g. Math:90, Science:85)"></textarea>
+      <textarea id="achievements" placeholder="Achievements"></textarea>
+      <textarea id="certificates" placeholder="Certificates (URLs or Descriptions)"></textarea>
+      <button type="submit">Save Student</button>
+    </form>
 
-<div class="container hidden" id="gameSection">
-  <h2>Odd or Even Cricket Game</h2>
-  <p id="turnInfo">Enter a number (0–10)</p>
-  <input type="number" id="playerInput" min="0" max="10" placeholder="0–10">
-  <button onclick="playTurn()">Play</button>
-  <div id="gameLog"></div>
-  <p id="finalResult"></p>
-  <button onclick="resetGame()">Restart Game</button>
-</div>
+    <h3>All Students</h3>
+    <table id="studentsTable">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Roll</th>
+          <th>Class</th>
+          <th>Age</th>
+          <th>Contact</th>
+          <th>Marks</th>
+          <th>Achievements</th>
+          <th>Certificates</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
 
-<script>
-const SHEET_URL = "https://script.google.com/macros/s/AKfycbx-Y01Ya_oGEfw5YjtkQ9bAcXOxQxNTByLbEmj4a7nY5huwfUnv0LLcba4ySI2_Bit67w/exec";
+  <script>
+    let students = JSON.parse(localStorage.getItem('students')) || [];
+    let editIndex = -1;
 
-let playerName = "";
-let playerEmail = "";
-let playerScore = 0;
-let computerScore = 0;
-let gamePhase = "toss"; // toss -> first innings -> second innings
-let playerRole = ""; // batting/bowling
-let targetScore = 0;
-let secondInnings = false;
-let gameOver = false;
+    const form = document.getElementById('studentForm');
+    const tableBody = document.querySelector('#studentsTable tbody');
 
-// --- LOGIN ---
-function loginPlayer() {
-  const name = document.getElementById("playerName").value;
-  const email = document.getElementById("playerEmail").value;
-  if(!name || !email){ alert("Enter Name & Email"); return;}
-  playerName = name; playerEmail = email;
+    function renderTable() {
+      tableBody.innerHTML = '';
+      students.forEach((s, i) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${s.name}</td>
+          <td>${s.roll}</td>
+          <td>${s.class}</td>
+          <td>${s.age}</td>
+          <td>${s.contact}</td>
+          <td>${s.marks}</td>
+          <td>${s.achievements}</td>
+          <td>${s.certificates}</td>
+          <td>
+            <button class="action-btn edit-btn" onclick="editStudent(${i})">Edit</button>
+            <button class="action-btn delete-btn" onclick="deleteStudent(${i})">Delete</button>
+          </td>
+        `;
+        tableBody.appendChild(row);
+      });
+    }
 
-  fetch(SHEET_URL, {
-    method:"POST",
-    mode:"no-cors",
-    headers:{ "Content-Type":"application/json" },
-    body: JSON.stringify({ name, email, device:navigator.userAgent, score:"Not Played Yet" })
-  }).then(()=>{
-    document.getElementById("status").innerText="✅ Login Success!";
-    document.getElementById("loginSection").classList.add("hidden");
-    document.getElementById("gameSection").classList.remove("hidden");
-    document.getElementById("turnInfo").innerText="Choose HEAD or TAILS for Toss";
-  }).catch(err=>{
-    document.getElementById("status").innerText="❌ Login Failed";
-  });
-}
+    function saveToLocal() {
+      localStorage.setItem('students', JSON.stringify(students));
+    }
 
-// --- GAME LOGIC ---
-function tossChoice(choice){
-  const comp = Math.random()<0.5?"HEAD":"TAILS";
-  if(choice===comp){
-    playerRole = prompt("You won the toss! Choose your role: batting or bowling","batting") || "batting";
-    alert(`Computer chose ${comp}. You are ${playerRole}`);
-  } else {
-    playerRole = comp==="HEAD"?"bowling":"batting";
-    alert(`Computer won toss. You are ${playerRole}`);
-  }
-  gamePhase = playerRole;
-  document.getElementById("turnInfo").innerText=`You are ${playerRole}. Enter 0–10`;
-}
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const studentData = {
+        name: document.getElementById('name').value.trim(),
+        roll: document.getElementById('roll').value.trim(),
+        class: document.getElementById('class').value.trim(),
+        age: document.getElementById('age').value.trim(),
+        contact: document.getElementById('contact').value.trim(),
+        marks: document.getElementById('marks').value.trim(),
+        achievements: document.getElementById('achievements').value.trim(),
+        certificates: document.getElementById('certificates').value.trim()
+      };
 
-function playTurn() {
-  if(gameOver) return;
-  const playerNum = parseInt(document.getElementById("playerInput").value);
-  if(isNaN(playerNum)||playerNum<0||playerNum>10){ alert("0–10 only"); return;}
-  const compNum = Math.floor(Math.random()*11);
-  let logEntry = `You: ${playerNum} | Computer: ${compNum}<br>`;
+      if(editIndex >= 0) {
+        students[editIndex] = studentData;
+        editIndex = -1;
+      } else {
+        students.push(studentData);
+      }
 
-  if(gamePhase==="batting"){
-    if(playerNum===compNum){
-      logEntry+="❌ OUT!";
-      if(!secondInnings){
-        targetScore = playerScore;
-        secondInnings=true;
-        gamePhase="bowling";
-        computerScore=0;
-        document.getElementById("turnInfo").innerText=`You are bowling. Defend target ${targetScore}`;
-      } else { endGame(); }
-    } else { playerScore+=playerNum; }
-  } else { // bowling
-    if(playerNum===compNum){
-      logEntry+="💥 Computer OUT!";
-      if(!secondInnings){
-        targetScore = computerScore;
-        secondInnings=true;
-        gamePhase="batting";
-        playerScore=0;
-        document.getElementById("turnInfo").innerText=`You are batting. Chase target ${targetScore}`;
-      } else { endGame(); }
-    } else { computerScore+=compNum; }
-  }
+      saveToLocal();
+      form.reset();
+      renderTable();
+    });
 
-  document.getElementById("gameLog").innerHTML+=logEntry;
-  document.getElementById("playerInput").value="";
-}
+    function editStudent(index) {
+      const s = students[index];
+      document.getElementById('name').value = s.name;
+      document.getElementById('roll').value = s.roll;
+      document.getElementById('class').value = s.class;
+      document.getElementById('age').value = s.age;
+      document.getElementById('contact').value = s.contact;
+      document.getElementById('marks').value = s.marks;
+      document.getElementById('achievements').value = s.achievements;
+      document.getElementById('certificates').value = s.certificates;
+      editIndex = index;
+    }
 
-function endGame(){
-  gameOver=true;
-  let resultText="";
-  if(playerScore>computerScore){ resultText="🎉 You Win!"; }
-  else if(playerScore<computerScore){ resultText="💔 You Lose!"; }
-  else{ resultText="🤝 It's a Tie!"; }
+    function deleteStudent(index) {
+      if(confirm('Are you sure you want to delete this student?')) {
+        students.splice(index,1);
+        saveToLocal();
+        renderTable();
+      }
+    }
 
-  document.getElementById("finalResult").innerText=`Final Score - You: ${playerScore} | Computer: ${computerScore} | ${resultText}`;
-  logScore(playerScore);
-}
-
-function logScore(finalScore){
-  fetch(SHEET_URL,{
-    method:"POST",
-    mode:"no-cors",
-    headers:{ "Content-Type":"application/json" },
-    body: JSON.stringify({ name:playerName, email:playerEmail, device:navigator.userAgent, score:finalScore })
-  }).then(()=>console.log("Score logged"))
-  .catch(err=>console.error("Error logging score",err));
-}
-
-function resetGame(){
-  playerScore=0; computerScore=0; secondInnings=false; gamePhase="toss"; gameOver=false;
-  document.getElementById("gameLog").innerHTML="";
-  document.getElementById("finalResult").innerText="";
-  document.getElementById("turnInfo").innerText="Choose HEAD or TAILS for Toss";
-}
-</script>
+    renderTable();
+  </script>
 </body>
 </html>

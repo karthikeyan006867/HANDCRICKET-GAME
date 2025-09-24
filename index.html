@@ -18,6 +18,7 @@
     Class: <input type="text" id="class" required>
     <button type="submit">Add Student</button>
   </form>
+  <div id="msg"></div>
   <table id="studentsTable">
     <thead>
       <tr><th>Name</th><th>Age</th><th>Class</th><th>Actions</th></tr>
@@ -26,6 +27,13 @@
   </table>
   <script>
     const API_URL = "http://localhost:3000/api/students";
+    const msgDiv = document.getElementById('msg');
+
+    function showMsg(text, color='red') {
+      msgDiv.innerText = text;
+      msgDiv.style.color = color;
+      setTimeout(() => { msgDiv.innerText = ""; }, 3000);
+    }
 
     function renderTable(students) {
       const tbody = document.querySelector('#studentsTable tbody');
@@ -45,28 +53,50 @@
     }
 
     async function fetchStudents() {
-      const res = await fetch(API_URL);
-      const students = await res.json();
-      renderTable(students);
+      try {
+        const res = await fetch(API_URL);
+        const students = await res.json();
+        renderTable(students);
+      } catch (e) {
+        showMsg('Error fetching students');
+      }
     }
 
     async function addStudent(event) {
       event.preventDefault();
-      const name = document.getElementById('name').value;
+      const name = document.getElementById('name').value.trim();
       const age = document.getElementById('age').value;
-      const studentClass = document.getElementById('class').value;
-      await fetch(API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, age, class: studentClass })
-      });
-      fetchStudents();
-      event.target.reset();
+      const studentClass = document.getElementById('class').value.trim();
+      if (!name || !age || !studentClass) {
+        showMsg('All fields required!');
+        return;
+      }
+      try {
+        const res = await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, age, class: studentClass })
+        });
+        if (!res.ok) {
+          const err = await res.json();
+          showMsg(err.error || 'Error adding student');
+        } else {
+          showMsg('Student added!', 'green');
+        }
+        fetchStudents();
+        event.target.reset();
+      } catch (e) {
+        showMsg('Network error');
+      }
     }
 
     async function deleteStudent(id) {
-      await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
-      fetchStudents();
+      try {
+        await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+        fetchStudents();
+      } catch (e) {
+        showMsg('Error deleting student');
+      }
     }
 
     document.getElementById('studentForm').onsubmit = addStudent;
@@ -74,3 +104,4 @@
   </script>
 </body>
 </html>
+\

@@ -1,1 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Odd or Even Cricket Game</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <style>
+    /* ----------------- BASE STYLES ----------------- */
+    :root {
+      --bg-color: #000;
+      --text-color: #fff;
+      --container-bg: #fff;
+      --container-text: #000;
+      --score-bg: #f1f3f5;
+      --btn-bg: #007bff;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      transition: all 0.4s ease;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: auto;
+      padding: 25px;
+      background-color: var(--container-bg);
+      color: var(--container-text);
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    button {
+      margin: 5px;
+      padding: 10px 18px;
+      font-size: 16px;
+      cursor: pointer;
+      border: none;
+      border-radius: 6px;
+      background-color: var(--btn-bg);
+      color: white;
+      transition: all 0.3s ease;
+    }
+
+    button:hover {
+      opacity: 0.85;
+    }
+
+    .top-controls {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 15px;
+    }
+
+    .difficulty-box {
+      display: none;
+      margin: 10px 0;
+      text-align: center;
+    }
+
+    .difficulty-box button.selected {
+      background-color: #dc3545;
+    }
+
+    #scoreboard {
+      background-color: var(--score-bg);
+      color: #000;
+      padding: 10px 15px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+
+    #number-buttons button {
+      width: 50px;
+      height: 50px;
+      margin: 3px;
+      font-size: 16px;
+    }
+
+    #shareBtn {
+      display: none;
+      position: fixed;
+      bottom: 10px;
+      right: 10px;
+      background-color: #25D366;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      border: none;
+      cursor: pointer;
+    }
+
+    .rainbow-popup {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #ff0;
+      padding: 12px 25px;
+      color: #000;
+      font-weight: bold;
+      border: 2px solid #000;
+      border-radius: 10px;
+      animation: fadeOut 5s forwards;
+      z-index: 1000;
+    }
+
+    @keyframes fadeOut {
+      0% {
+        opacity: 1;
+      }
+
+      80% {
+        opacity: 1;
+      }
+
+      100% {
+        opacity: 0;
+        display: none;
+      }
+    }
+
+    @keyframes shake {
+      0% {
+        transform: translateX(0);
+      }
+
+      20% {
+        transform: translateX(-5px);
+      }
+
+      40% {
+        transform: translateX(5px);
+      }
+
+      60% {
+        transform: translateX(-5px);
+      }
+
+      80% {
+        transform: translateX(5px);
+      }
+
+      100% {
+        transform: translateX(0);
+      }
+    }
+
+    .shake {
+      animation: shake 0.5s;
+    }
+  </style>
+</head>
+
+<body class="dark">
+  <div class="container" id="game-container">
+    <div class="top-controls">
+      <button onclick="toggleDifficulty()">🧠 Difficulty</button>
+      <button onclick="toggleTheme()">🎨 Theme</button>
+    </div>
+
+    <div class="difficulty-box" id="difficulty-box">
+      <button onclick="setDifficulty('easy')" id="easy-btn">Easy</button>
+      <button onclick="setDifficulty('medium')" id="medium-btn">Medium</button>
+      <button onclick="setDifficulty('hard')" id="hard-btn">Hard</button>
+    </div>
+
+    <h1>Odd or Even Cricket Game</h1>
+
+    <div id="toss-section">
+      <p>Choose Head or Tails:</p>
+      <button onclick="chooseToss('Head')">Head</button>
+      <button onclick="chooseToss('Tails')">Tails</button>
+    </div>
+
+    <div id="batbowl-section" style="display:none;">
+      <p>You won the toss! Choose:</p>
+      <button onclick="chooseBatBowl('Batting')">Batting</button>
+      <button onclick="chooseBatBowl('Bowling')">Bowling</button>
+    </div>
+
+    <div id="main-game" style="display:none;">
+      <div id="scoreboard">
+        <p id="innings-status"></p>
+        <p>Your Score: <span id="player-score">0</span></p>
+        <p>Computer Score: <span id="computer-score">0</span></p>
+        <p>Over: <span id="current-over">1</span>.<span id="current-ball">0</span></p>
+      </div>
+
+      <div id="input-section">
+        <p>Enter a number (1-6):</p>
+        <div id="number-buttons">
+          <button onclick="playTurn(1)">1</button>
+          <button onclick="playTurn(2)">2</button>
+          <button onclick="playTurn(3)">3</button>
+          <button onclick="playTurn(4)">4</button>
+          <button onclick="playTurn(5)">5</button>
+          <button onclick="playTurn(6)">6</button>
+        </div>
+      </div>
+
+      <div id="result-section">
+        <p id="result-message"></p>
+      </div>
+    </div>
+  </div>
+
+  <button id="shareBtn">📤 Share via WhatsApp</button>
+
+  <script>
+    // ---------------- VARIABLES ----------------
+    let difficulty = 'easy';
+    let themeClickCount = 0;
+    let playerScore = 0,
+      computerScore = 0;
+    let playerChoice = '';
+    let gamePhase = 'toss';
+    let secondPhase = false;
+    let prevMoves = [],
+      sameChoiceCount = 0,
+      lastPlayerInput = null;
+
+    const playerScoreDisplay = document.getElementById('player-score');
+    const computerScoreDisplay = document.getElementById('computer-score');
+    const inningsStatus = document.getElementById('innings-status');
+    const resultMessage = document.getElementById('result-message');
+    const mainGame = document.getElementById('main-game');
+    const tossSection = document.getElementById('toss-section');
+    const batBowlSection = document.getElementById('batbowl-section');
+    const shareBtn = document.getElementById('shareBtn');
+    const container = document.getElementById('game-container');
+
+    // ---------------- THEME/DIFICULTY ----------------
+    function toggleTheme() {
+      themeClickCount++;
+      if (themeClickCount === 9) {
+        document.body.className = 'rainbow';
+        showPopup("🌈 Rainbow Theme Unlocked!");
+      } else {
+        const themes = ['dark', 'light', 'purple'];
+        const current = themes.indexOf(document.body.className);
+        document.body.className = themes[(current + 1) % themes.length];
+      }
+    }
+
+    function toggleDifficulty() {
+      const box = document.getElementById("difficulty-box");
+      box.style.display = box.style.display === "block" ? "none" : "block";
+    }
+
+    function setDifficulty(level) {
+      difficulty = level;
+      document.getElementById("difficulty-box").style.display = "none";
+      ["easy", "medium", "hard"].forEach(id => {
+        document.getElementById(`${id}-btn`).classList.remove("selected");
+      });
+      document.getElementById(`${level}-btn`).classList.add("selected");
+    }
+
+    // ---------------- GAME LOGIC ----------------
+    function chooseToss(choice) {
+      const compToss = Math.random() < 0.5 ? 'Head' : 'Tails';
+      if (choice === compToss) {
+        tossSection.style.display = 'none';
+        batBowlSection.style.display = 'block';
+      } else {
+        tossSection.style.display = 'none';
+        gamePhase = 'batting';
+        startGame();
+      }
+    }
+
+    function chooseBatBowl(choice) {
+      playerChoice = choice;
+      gamePhase = choice.toLowerCase();
+      batBowlSection.style.display = 'none';
+      startGame();
+    }
+
+    function startGame() {
+      mainGame.style.display = 'block';
+      inningsStatus.textContent = `You are ${gamePhase}${secondPhase ? " (2nd Innings)" : ""}`;
+    }
+
+    function generateComputerMove() {
+      if (difficulty === 'easy') return Math.floor(Math.random() * 6) + 1;
+      if (difficulty === 'medium') return prevMoves[prevMoves.length - 1] || Math.floor(Math.random() * 6) + 1;
+      if (difficulty === 'hard') {
+        const freq = {};
+        prevMoves.forEach(n => freq[n] = (freq[n] || 0) + 1);
+        const sorted = Object.entries(freq).sort((a, b) => b[1] - a[1]);
+        return sorted.length ? parseInt(sorted[0][0]) : Math.floor(Math.random() * 6) + 1;
+      }
+    }
+
+    function playTurn(num) {
+      if (num === lastPlayerInput) {
+        sameChoiceCount++;
+        if (sameChoiceCount === 3) showPopup("⚠ Don't repeat the same number!");
+        if (sameChoiceCount === 5) {
+          resultMessage.textContent = "❌ Out for repeating!";
+          animateOut();
+          endGame();
+          return;
+        }
+      } else {
+        sameChoiceCount = 1;
+        lastPlayerInput = num;
+      }
+
+      const comp = generateComputerMove();
+      prevMoves.push(num);
+
+      if (gamePhase === 'batting') {
+        if (num === comp) {
+          resultMessage.textContent = "💔 You're Out!";
+          animateOut();
+          endGame();
+        } else {
+          playerScore += num;
+        }
+      } else {
+        if (num === comp) {
+          resultMessage.textContent = "🎉 Computer Out!";
+          endGame();
+        } else {
+          computerScore += comp;
+        }
+      }
+
+      playerScoreDisplay.textContent = playerScore;
+      computerScoreDisplay.textContent = computerScore;
+    }
+
+    function endGame() {
+      resultMessage.textContent = `🏁 Game Over! Your Score: ${playerScore} | Computer Score: ${computerScore}`;
+      shareBtn.style.display = 'inline-block';
+    }
+
+    function showPopup(message) {
+      const popup = document.createElement("div");
+      popup.className = "rainbow-popup";
+      popup.textContent = message;
+      document.body.appendChild(popup);
+      setTimeout(() => popup.remove(), 5000);
+    }
+
+    function animateOut() {
+      container.classList.add("shake");
+      setTimeout(() => container.classList.remove("shake"), 600);
+    }
+
+    // ---------------- SCREENSHOT SHARE ----------------
+    shareBtn.addEventListener("click", function () {
+      html2canvas(container).then(function (canvas) {
+        canvas.toBlob(function (blob) {
+          const file = new File([blob], "game-screenshot.png", { type: "image/png" });
+
+          if (navigator.share && navigator.canShare({ files: [file] })) {
+            navigator.share({
+              files: [file],
+              title: "Odd or Even Cricket Game",
+              text: "Check out my game result!"
+            }).catch((error) => console.log("Sharing failed:", error));
+          } else {
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(file);
+            link.download = "game-screenshot.png";
+            link.click();
+            window.open("https://wa.me/?text=Check%20out%20my%20game%20screenshot!", "_blank");
+          }
+        });
+      });
+    });
+  </script>
+</body>
+
+</html>
 

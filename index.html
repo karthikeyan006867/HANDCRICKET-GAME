@@ -1081,6 +1081,82 @@
       .sound-toggle, .vibration-indicator { width: 40px; height: 40px; font-size: 1.2rem; }
       .keyboard-input { font-size: 1.5rem; padding: 15px; }
     }
+
+    /* Hidden class */
+    .hidden {
+      display: none !important;
+    }
+
+    /* Score Popup */
+    .score-popup {
+      position: fixed;
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--success);
+      text-shadow: 0 0 10px rgba(16,185,129,0.5);
+      pointer-events: none;
+      z-index: 1000;
+      animation: floatUp 1s ease forwards;
+      transform: translateX(-50%);
+    }
+
+    .score-popup.negative {
+      color: var(--danger);
+      text-shadow: 0 0 10px rgba(239,68,68,0.5);
+    }
+
+    @keyframes floatUp {
+      0% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0) scale(1);
+      }
+      100% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-60px) scale(1.5);
+      }
+    }
+
+    /* Screenshot Preview */
+    .screenshot-preview {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.9);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      padding: 20px;
+    }
+
+    .screenshot-preview img {
+      max-width: 90%;
+      max-height: 70vh;
+      border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    }
+
+    .screenshot-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    /* Vibrate animation */
+    .vibrate {
+      animation: vibrate 0.3s ease;
+    }
+
+    @keyframes vibrate {
+      0%, 100% { transform: translateX(0); }
+      10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+      20%, 40%, 60%, 80% { transform: translateX(5px); }
+    }
   </style>
   <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 </head>
@@ -1176,17 +1252,17 @@
         <!-- Button Input Mode -->
         <div class="button-input-wrapper" id="button-input-wrapper">
           <div class="number-grid" id="number-grid">
-            <button class="number-btn" onclick="selectNumber(0)">0️⃣</button>
-            <button class="number-btn" onclick="selectNumber(1)">1️⃣</button>
-            <button class="number-btn" onclick="selectNumber(2)">2️⃣</button>
-            <button class="number-btn" onclick="selectNumber(3)">3️⃣</button>
-            <button class="number-btn" onclick="selectNumber(4)">4️⃣</button>
-            <button class="number-btn" onclick="selectNumber(5)">5️⃣</button>
-            <button class="number-btn" onclick="selectNumber(6)">6️⃣</button>
-            <button class="number-btn" onclick="selectNumber(7)">7️⃣</button>
-            <button class="number-btn" onclick="selectNumber(8)">8️⃣</button>
-            <button class="number-btn" onclick="selectNumber(9)">9️⃣</button>
-            <button class="number-btn" onclick="selectNumber(10)">🔟</button>
+            <button class="number-btn" onclick="selectNumber(0, event)">0️⃣</button>
+            <button class="number-btn" onclick="selectNumber(1, event)">1️⃣</button>
+            <button class="number-btn" onclick="selectNumber(2, event)">2️⃣</button>
+            <button class="number-btn" onclick="selectNumber(3, event)">3️⃣</button>
+            <button class="number-btn" onclick="selectNumber(4, event)">4️⃣</button>
+            <button class="number-btn" onclick="selectNumber(5, event)">5️⃣</button>
+            <button class="number-btn" onclick="selectNumber(6, event)">6️⃣</button>
+            <button class="number-btn" onclick="selectNumber(7, event)">7️⃣</button>
+            <button class="number-btn" onclick="selectNumber(8, event)">8️⃣</button>
+            <button class="number-btn" onclick="selectNumber(9, event)">9️⃣</button>
+            <button class="number-btn" onclick="selectNumber(10, event)">🔟</button>
             <button onclick="playRound()" class="success">▶️ Play!</button>
           </div>
         </div>
@@ -1316,6 +1392,7 @@
     let selectedNumber = null;
     let soundEnabled = localStorage.getItem('soundEnabled') !== 'false';
     let vibrationEnabled = localStorage.getItem('vibrationEnabled') !== 'false';
+    let inputMode = localStorage.getItem('inputMode') || 'buttons';
 
     // DOM Elements
     const playerRunInput = document.getElementById('player-run');
@@ -1347,10 +1424,19 @@
       document.getElementById('vibration-toggle').textContent = vibrationEnabled ? '📳' : '📴';
       document.getElementById('vibration-toggle').classList.toggle('disabled', !vibrationEnabled);
       
-      // Restore input mode
+      // Restore input mode (only apply if game screen elements exist)
       const savedInputMode = localStorage.getItem('inputMode') || 'buttons';
-      if (savedInputMode === 'keyboard') {
-        setInputMode('keyboard');
+      inputMode = savedInputMode;
+      const btnMode = document.getElementById('btn-mode');
+      const keyboardMode = document.getElementById('keyboard-mode');
+      const buttonWrapper = document.getElementById('button-input-wrapper');
+      const keyboardWrapper = document.getElementById('keyboard-input-wrapper');
+      
+      if (btnMode && keyboardMode && buttonWrapper && keyboardWrapper) {
+        btnMode.classList.toggle('active', savedInputMode === 'buttons');
+        keyboardMode.classList.toggle('active', savedInputMode === 'keyboard');
+        buttonWrapper.classList.toggle('hidden', savedInputMode === 'keyboard');
+        keyboardWrapper.classList.toggle('active', savedInputMode === 'keyboard');
       }
     };
 
@@ -1362,8 +1448,11 @@
 
       if (!username || username.length < 2) {
         showError('Please enter a name (at least 2 characters)');
+        vibrate([100, 50, 100]);
         return;
       }
+
+      playSound('click');
 
       try {
         // Check if username exists
@@ -1383,6 +1472,8 @@
             currentPlayer = data.player;
             localStorage.setItem('currentPlayer', JSON.stringify(currentPlayer));
             showToast(`Welcome back, ${currentPlayer.username}! 🎉`);
+            playSound('wicket');
+            vibrate([100, 50, 100]);
             showGameScreen();
             updatePlayerDisplay();
           }
@@ -1399,11 +1490,14 @@
             currentPlayer = data.player;
             localStorage.setItem('currentPlayer', JSON.stringify(currentPlayer));
             showToast(`Welcome, ${currentPlayer.username}! Let's play! 🚀`);
+            playSound('start');
+            vibrate([100, 50, 100]);
             showGameScreen();
             updatePlayerDisplay();
           } else {
             const error = await registerResponse.json();
             showError(error.error || 'Registration failed');
+            vibrate([100, 50, 100]);
           }
         }
       } catch (error) {
@@ -1420,6 +1514,7 @@
         };
         localStorage.setItem('currentPlayer', JSON.stringify(currentPlayer));
         showToast(`Playing offline as ${username} 🎮`);
+        playSound('click');
         showGameScreen();
         updatePlayerDisplay();
       }
@@ -1466,41 +1561,64 @@
     // ============ LEADERBOARD ============
     async function showLeaderboard() {
       document.getElementById('leaderboard-modal').classList.add('active');
+      const list = document.getElementById('leaderboard-list');
+      list.innerHTML = '<li style="text-align: center; padding: 20px;"><div class="login-emoji" style="font-size: 2rem;">⏳</div>Loading...</li>';
+      
+      playSound('click');
       
       try {
         const response = await fetch(`${API_URL}/leaderboard`);
         if (response.ok) {
           const players = await response.json();
           renderLeaderboard(players);
+        } else {
+          throw new Error('Failed to fetch');
         }
       } catch (error) {
-        document.getElementById('leaderboard-list').innerHTML = 
-          '<li style="text-align: center; padding: 20px;">Unable to load leaderboard 😔</li>';
+        console.error('Leaderboard error:', error);
+        list.innerHTML = `
+          <div class="leaderboard-empty">
+            <div class="icon">🏆</div>
+            <p>Unable to load leaderboard</p>
+            <p style="font-size: 0.8rem;">Play some games to see rankings!</p>
+          </div>
+        `;
       }
     }
 
     function renderLeaderboard(players) {
       const list = document.getElementById('leaderboard-list');
       
-      if (players.length === 0) {
-        list.innerHTML = '<li style="text-align: center; padding: 20px;">No players yet! Be the first! 🎮</li>';
+      if (!players || players.length === 0) {
+        list.innerHTML = `
+          <div class="leaderboard-empty">
+            <div class="icon">🎮</div>
+            <p>No players yet!</p>
+            <p style="font-size: 0.8rem;">Be the first to play and claim the top spot!</p>
+          </div>
+        `;
         return;
       }
       
       list.innerHTML = players.map((player, index) => {
         const rankClass = index === 0 ? 'gold' : index === 1 ? 'silver' : index === 2 ? 'bronze' : '';
         const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `#${index + 1}`;
+        const winRate = player.win_rate || 0;
+        const totalWins = player.total_wins || 0;
+        const totalLosses = player.total_losses || 0;
+        const highestScore = player.highest_score || 0;
+        const isCurrentPlayer = currentPlayer && player.username === currentPlayer.username;
         
         return `
-          <li class="leaderboard-item ${rankClass}">
+          <li class="leaderboard-item ${rankClass}" style="${isCurrentPlayer ? 'border: 2px solid var(--primary); box-shadow: 0 0 15px rgba(0,212,255,0.3);' : ''}">
             <div class="rank-badge ${rankClass}">${medal}</div>
             <div class="player-details">
-              <div class="name">${player.username}</div>
+              <div class="name">${player.username} ${isCurrentPlayer ? '(You)' : ''}</div>
               <div class="stats">
-                <span class="wins">${player.total_wins}W</span> / 
-                ${player.total_losses}L | 
-                Best: ${player.highest_score} | 
-                ${player.win_rate}% WR
+                <span class="wins">${totalWins}W</span> / 
+                ${totalLosses}L | 
+                Best: ${highestScore} | 
+                ${winRate}% WR
               </div>
             </div>
           </li>
@@ -1607,16 +1725,17 @@
     }
 
     // ============ NUMBER SELECTION ============
-    function selectNumber(num) {
+    function selectNumber(num, e) {
       selectedNumber = num;
       playerRunInput.value = num;
       
       // Update button styles
       document.querySelectorAll('.number-btn').forEach(btn => btn.classList.remove('selected'));
-      if (event && event.target) {
-        event.target.classList.add('selected');
-        event.target.classList.add('heartbeat');
-        setTimeout(() => event.target.classList.remove('heartbeat'), 600);
+      const btn = e ? e.target : document.querySelectorAll('.number-btn')[num];
+      if (btn) {
+        btn.classList.add('selected');
+        btn.classList.add('heartbeat');
+        setTimeout(() => btn.classList.remove('heartbeat'), 600);
       }
       
       playSound('click');
@@ -1740,23 +1859,35 @@
     }
 
     function playRound() {
-      const val = parseInt(playerRunInput.value);
+      // Get value from either button mode or keyboard mode
+      let val;
+      if (inputMode === 'keyboard') {
+        val = parseInt(document.getElementById('keyboard-input').value);
+      } else {
+        val = parseInt(playerRunInput.value);
+      }
       
       if (isNaN(val) || val < 0 || val > 10) {
         messageBox.innerHTML = "⚠️ Please select a number between 0 and 10!";
         container.classList.add('shake');
+        vibrate([100, 50, 100]);
         setTimeout(() => container.classList.remove('shake'), 500);
         return;
       }
 
+      // Store in hidden input for consistency
+      playerRunInput.value = val;
+      
       // Check for repeated inputs
       if (val === lastPlayerInput) {
         sameChoiceCount++;
         if (sameChoiceCount === 3) {
           showToast("⚠️ Warning: Try different numbers!");
+          vibrate([200]);
         }
         if (sameChoiceCount === 4) {
           showToast("😬 One more repeat and you're OUT!");
+          vibrate([300, 100, 300]);
         }
       } else {
         sameChoiceCount = 1;
@@ -1766,7 +1897,7 @@
       // Auto-out for 5 same choices while batting
       if (sameChoiceCount >= 5 && gamePhase === 'batting') {
         messageBox.innerHTML = "❌ You used the same number 5 times! You're OUT!";
-        playSound('lose');
+        playSound('out');
         animateOut();
         handleOut();
         return;
@@ -1790,19 +1921,35 @@
       // Clear selection
       selectedNumber = null;
       playerRunInput.value = '';
+      document.getElementById('keyboard-input').value = '';
       document.querySelectorAll('.number-btn').forEach(btn => btn.classList.remove('selected'));
 
       // Game logic
       if (gamePhase === 'batting') {
         if (isOut) {
           messageBox.innerHTML = `💥 OUT! Both chose ${val}!`;
-          playSound('lose');
+          playSound('out');
           animateOut();
           handleOut();
         } else {
           const runs = val === 0 ? comp : val;
           p_run += runs;
           updateScores();
+          showFloatingScore(runs, true);
+          
+          // Play appropriate sound
+          if (runs >= 6) {
+            playSound('six');
+            showToast("🔥 SIX! What a shot!");
+            createSparkle(window.innerWidth / 2, window.innerHeight / 2);
+          } else if (runs >= 4) {
+            playSound('four');
+            showToast("💪 FOUR! Great hit!");
+          } else {
+            playSound('run');
+          }
+          
+          vibrate([50]);
           
           const runEmoji = runs >= 6 ? '🔥' : runs >= 4 ? '💪' : '👍';
           messageBox.innerHTML = `${runEmoji} +${runs} runs! Keep going!`;
@@ -1814,12 +1961,17 @@
       } else {
         if (isOut) {
           messageBox.innerHTML = `🎯 WICKET! Both chose ${val}! Computer is OUT!`;
-          playSound('lose');
+          playSound('wicket');
           animateOut();
+          showToast("🎯 GOT 'EM! Wicket!");
+          vibrate([100, 50, 100, 50, 100]);
           handleOut();
         } else {
           c_run += comp;
           updateScores();
+          
+          playSound('run');
+          vibrate([30]);
           
           const dangerLevel = c_run > p_run ? '😰' : c_run === p_run ? '😐' : '😊';
           messageBox.innerHTML = `${dangerLevel} Computer scored ${comp} runs. Total: ${c_run}`;
@@ -1994,8 +2146,6 @@
     }
 
     // ============ INPUT MODE ============
-    let inputMode = 'buttons';
-
     function setInputMode(mode) {
       inputMode = mode;
       document.getElementById('btn-mode').classList.toggle('active', mode === 'buttons');
@@ -2224,19 +2374,59 @@
 
     // Keyboard shortcuts
     document.addEventListener("keydown", function(e) {
-      if (e.key === "Enter") playRound();
-      if (e.key >= '0' && e.key <= '9') {
-        selectNumber(parseInt(e.key));
-        // Highlight the button
-        const buttons = document.querySelectorAll('.number-btn');
-        buttons.forEach(btn => btn.classList.remove('selected'));
-        if (buttons[parseInt(e.key)]) buttons[parseInt(e.key)].classList.add('selected');
+      // Don't process if typing in inputs
+      if (e.target.tagName === 'INPUT' && e.target.id !== 'keyboard-input') return;
+      
+      if (e.key === "Enter") {
+        e.preventDefault();
+        playRound();
+      }
+      
+      // Number keys for button mode
+      if (inputMode === 'buttons') {
+        if (e.key >= '0' && e.key <= '9') {
+          const num = parseInt(e.key);
+          selectNumber(num, null);
+        }
+        // Special case for "10" - press 1 then 0 quickly
+        if (e.key === '0' && playerRunInput.value === '1') {
+          selectNumber(10, null);
+        }
       }
     });
 
     // Handle Enter on username input
     document.getElementById('username-input').addEventListener('keydown', function(e) {
       if (e.key === 'Enter') handleLogin();
+    });
+
+    // Handle Enter on keyboard input
+    document.getElementById('keyboard-input').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        playRound();
+      }
+    });
+
+    // Click anywhere to close modals
+    document.getElementById('leaderboard-modal').addEventListener('click', function(e) {
+      if (e.target === this) closeLeaderboard();
+    });
+
+    document.getElementById('stats-modal').addEventListener('click', function(e) {
+      if (e.target === this) closeStats();
+    });
+
+    // Add ripple effect to buttons
+    document.addEventListener('click', function(e) {
+      if (e.target.tagName === 'BUTTON') {
+        const ripple = document.createElement('div');
+        ripple.className = 'ripple';
+        ripple.style.left = e.offsetX + 'px';
+        ripple.style.top = e.offsetY + 'px';
+        e.target.appendChild(ripple);
+        setTimeout(() => ripple.remove(), 600);
+      }
     });
   </script>
 </body>

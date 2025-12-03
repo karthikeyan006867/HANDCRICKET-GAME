@@ -764,6 +764,313 @@
       100% { transform: rotateY(1800deg); }
     }
 
+    @keyframes vibrate {
+      0%, 100% { transform: translate(0); }
+      10% { transform: translate(-2px, -2px); }
+      20% { transform: translate(2px, -2px); }
+      30% { transform: translate(-2px, 2px); }
+      40% { transform: translate(2px, 2px); }
+      50% { transform: translate(-2px, -2px); }
+      60% { transform: translate(2px, -2px); }
+      70% { transform: translate(-2px, 2px); }
+      80% { transform: translate(2px, 2px); }
+      90% { transform: translate(-2px, -2px); }
+    }
+
+    @keyframes sparkle {
+      0%, 100% { opacity: 0; transform: scale(0); }
+      50% { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes ripple {
+      0% { transform: scale(0); opacity: 1; }
+      100% { transform: scale(4); opacity: 0; }
+    }
+
+    @keyframes scoreUp {
+      0% { transform: translateY(0); opacity: 1; }
+      100% { transform: translateY(-50px); opacity: 0; }
+    }
+
+    @keyframes heartbeat {
+      0%, 100% { transform: scale(1); }
+      25% { transform: scale(1.1); }
+      50% { transform: scale(1); }
+      75% { transform: scale(1.1); }
+    }
+
+    .vibrate { animation: vibrate 0.3s linear; }
+    .heartbeat { animation: heartbeat 0.6s ease; }
+
+    /* Input Mode Toggle */
+    .input-mode-toggle {
+      display: flex;
+      justify-content: center;
+      gap: 5px;
+      margin-bottom: 15px;
+      background: rgba(255,255,255,0.05);
+      padding: 5px;
+      border-radius: 50px;
+    }
+
+    .input-mode-toggle button {
+      flex: 1;
+      padding: 10px 15px;
+      font-size: 12px;
+      border-radius: 50px;
+      background: transparent;
+      color: rgba(255,255,255,0.6);
+      border: none;
+    }
+
+    .input-mode-toggle button.active {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      box-shadow: 0 5px 20px rgba(0,212,255,0.3);
+    }
+
+    /* Keyboard Input Mode */
+    .keyboard-input-wrapper {
+      display: none;
+      margin-bottom: 15px;
+    }
+
+    .keyboard-input-wrapper.active {
+      display: block;
+    }
+
+    .keyboard-input {
+      width: 100%;
+      padding: 20px;
+      font-size: 2rem;
+      text-align: center;
+      border: 3px solid rgba(0,212,255,0.3);
+      border-radius: 16px;
+      background: rgba(255,255,255,0.05);
+      color: var(--text-color);
+      font-family: 'Poppins', sans-serif;
+      font-weight: 700;
+      transition: all 0.3s ease;
+      letter-spacing: 5px;
+    }
+
+    .keyboard-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 30px rgba(0,212,255,0.4);
+      animation: glow 1s ease infinite;
+    }
+
+    .keyboard-input::placeholder {
+      color: rgba(255,255,255,0.3);
+      letter-spacing: 0;
+    }
+
+    /* Button Grid Mode */
+    .button-input-wrapper {
+      display: block;
+    }
+
+    .button-input-wrapper.hidden {
+      display: none;
+    }
+
+    /* Floating Score Animation */
+    .score-popup {
+      position: absolute;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--success);
+      animation: scoreUp 1s ease forwards;
+      pointer-events: none;
+      z-index: 100;
+    }
+
+    .score-popup.negative {
+      color: var(--danger);
+    }
+
+    /* Sparkle Effect */
+    .sparkle {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: sparkle 0.6s ease forwards;
+      pointer-events: none;
+    }
+
+    /* Ripple Effect */
+    .ripple {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: rgba(0,212,255,0.3);
+      animation: ripple 0.6s ease forwards;
+      pointer-events: none;
+    }
+
+    /* Particles Background */
+    .particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .particle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: var(--primary);
+      border-radius: 50%;
+      opacity: 0.5;
+      animation: float 8s ease-in-out infinite;
+    }
+
+    /* Sound Toggle */
+    .sound-toggle {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      cursor: pointer;
+      z-index: 100;
+      box-shadow: 0 5px 20px rgba(0,212,255,0.3);
+      transition: all 0.3s ease;
+    }
+
+    .sound-toggle:hover {
+      transform: scale(1.1);
+    }
+
+    .sound-toggle.muted {
+      background: rgba(255,255,255,0.2);
+    }
+
+    /* Vibration Toggle */
+    .vibration-indicator {
+      position: fixed;
+      bottom: 80px;
+      right: 20px;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), #d97706);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      cursor: pointer;
+      z-index: 100;
+      box-shadow: 0 5px 20px rgba(245,158,11,0.3);
+      transition: all 0.3s ease;
+    }
+
+    .vibration-indicator:hover {
+      transform: scale(1.1);
+    }
+
+    .vibration-indicator.disabled {
+      background: rgba(255,255,255,0.2);
+    }
+
+    /* Enhanced Score Cards */
+    .score-card {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .score-card::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+      transform: rotate(45deg);
+      transition: 0.5s;
+    }
+
+    .score-card:hover::after {
+      left: 100%;
+    }
+
+    /* Live Score Indicator */
+    .live-indicator {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      background: var(--danger);
+      border-radius: 50%;
+      margin-right: 5px;
+      animation: pulse 1s infinite;
+    }
+
+    /* Enhanced Leaderboard */
+    .leaderboard-item {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .leaderboard-item::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+      transition: 0.5s;
+    }
+
+    .leaderboard-item:hover::before {
+      left: 100%;
+    }
+
+    .leaderboard-empty {
+      text-align: center;
+      padding: 40px 20px;
+      color: rgba(255,255,255,0.6);
+    }
+
+    .leaderboard-empty .icon {
+      font-size: 4rem;
+      margin-bottom: 15px;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    /* Target Display */
+    .target-display {
+      background: linear-gradient(135deg, rgba(239,68,68,0.2), rgba(245,158,11,0.2));
+      border: 2px solid var(--accent);
+      padding: 15px;
+      border-radius: 12px;
+      text-align: center;
+      margin: 15px 0;
+      animation: pulse 2s infinite;
+    }
+
+    .target-display .target-value {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--accent);
+    }
+
     /* Responsive */
     @media (max-width: 480px) {
       .container { padding: 20px; }
@@ -771,6 +1078,8 @@
       .number-grid { grid-template-columns: repeat(3, 1fr); }
       .top-controls { gap: 5px; }
       button { padding: 10px 14px; font-size: 12px; }
+      .sound-toggle, .vibration-indicator { width: 40px; height: 40px; font-size: 1.2rem; }
+      .keyboard-input { font-size: 1.5rem; padding: 15px; }
     }
   </style>
   <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
@@ -853,19 +1162,41 @@
       <div id="game-section" style="display:none;">
         <div id="game-status">🏏 Game On!</div>
         
-        <div class="number-grid" id="number-grid">
-          <button class="number-btn" onclick="selectNumber(0)">0️⃣</button>
-          <button class="number-btn" onclick="selectNumber(1)">1️⃣</button>
-          <button class="number-btn" onclick="selectNumber(2)">2️⃣</button>
-          <button class="number-btn" onclick="selectNumber(3)">3️⃣</button>
-          <button class="number-btn" onclick="selectNumber(4)">4️⃣</button>
-          <button class="number-btn" onclick="selectNumber(5)">5️⃣</button>
-          <button class="number-btn" onclick="selectNumber(6)">6️⃣</button>
-          <button class="number-btn" onclick="selectNumber(7)">7️⃣</button>
-          <button class="number-btn" onclick="selectNumber(8)">8️⃣</button>
-          <button class="number-btn" onclick="selectNumber(9)">9️⃣</button>
-          <button class="number-btn" onclick="selectNumber(10)">🔟</button>
-          <button onclick="playRound()" class="success">▶️ Play!</button>
+        <!-- Target Display (shows in 2nd innings) -->
+        <div id="target-display" class="target-display" style="display: none;">
+          <span class="live-indicator"></span> Target: <span class="target-value" id="target-value">0</span>
+        </div>
+
+        <!-- Input Mode Toggle -->
+        <div class="input-mode-toggle">
+          <button id="btn-mode" class="active" onclick="setInputMode('buttons')">🔢 Buttons</button>
+          <button id="keyboard-mode" onclick="setInputMode('keyboard')">⌨️ Keyboard</button>
+        </div>
+
+        <!-- Button Input Mode -->
+        <div class="button-input-wrapper" id="button-input-wrapper">
+          <div class="number-grid" id="number-grid">
+            <button class="number-btn" onclick="selectNumber(0)">0️⃣</button>
+            <button class="number-btn" onclick="selectNumber(1)">1️⃣</button>
+            <button class="number-btn" onclick="selectNumber(2)">2️⃣</button>
+            <button class="number-btn" onclick="selectNumber(3)">3️⃣</button>
+            <button class="number-btn" onclick="selectNumber(4)">4️⃣</button>
+            <button class="number-btn" onclick="selectNumber(5)">5️⃣</button>
+            <button class="number-btn" onclick="selectNumber(6)">6️⃣</button>
+            <button class="number-btn" onclick="selectNumber(7)">7️⃣</button>
+            <button class="number-btn" onclick="selectNumber(8)">8️⃣</button>
+            <button class="number-btn" onclick="selectNumber(9)">9️⃣</button>
+            <button class="number-btn" onclick="selectNumber(10)">🔟</button>
+            <button onclick="playRound()" class="success">▶️ Play!</button>
+          </div>
+        </div>
+
+        <!-- Keyboard Input Mode -->
+        <div class="keyboard-input-wrapper" id="keyboard-input-wrapper">
+          <input type="number" id="keyboard-input" class="keyboard-input" 
+                 min="0" max="10" placeholder="Type 0-10..." 
+                 oninput="validateKeyboardInput(this)">
+          <button onclick="playRound()" class="success" style="width: 100%; margin-top: 10px;">▶️ Play Round!</button>
         </div>
 
         <input type="hidden" id="player-run" value="" />
@@ -902,7 +1233,21 @@
     <audio id="clapssound" src="https://assets.mixkit.co/sfx/preview/mixkit-applause-500.mp3"></audio>
     <audio id="losinghorn" src="https://assets.mixkit.co/sfx/preview/mixkit-wrong-answer-fail-notification-946.mp3"></audio>
     <audio id="coinflip" src="https://assets.mixkit.co/sfx/preview/mixkit-coins-handling-1939.mp3"></audio>
+    <audio id="clicksound" src="https://assets.mixkit.co/sfx/preview/mixkit-select-click-1109.mp3"></audio>
+    <audio id="runsound" src="https://assets.mixkit.co/sfx/preview/mixkit-arcade-bonus-alert-767.mp3"></audio>
+    <audio id="outsound" src="https://assets.mixkit.co/sfx/preview/mixkit-losing-bleeps-2026.mp3"></audio>
+    <audio id="wicketsound" src="https://assets.mixkit.co/sfx/preview/mixkit-winning-chimes-2015.mp3"></audio>
+    <audio id="sixsound" src="https://assets.mixkit.co/sfx/preview/mixkit-video-game-win-2016.mp3"></audio>
+    <audio id="foursound" src="https://assets.mixkit.co/sfx/preview/mixkit-unlock-game-notification-253.mp3"></audio>
+    <audio id="startsound" src="https://assets.mixkit.co/sfx/preview/mixkit-game-level-music-689.mp3"></audio>
   </div>
+
+  <!-- Floating Buttons -->
+  <div class="sound-toggle" id="sound-toggle" onclick="toggleSound()" title="Toggle Sound">🔊</div>
+  <div class="vibration-indicator" id="vibration-toggle" onclick="toggleVibration()" title="Toggle Vibration">📳</div>
+
+  <!-- Particles Background -->
+  <div class="particles" id="particles"></div>
 
   <!-- Leaderboard Modal -->
   <div class="modal" id="leaderboard-modal">
@@ -969,6 +1314,8 @@
     let playerChoice = '', gamePhase = 'toss', secondPhase = false;
     let prevMoves = [], sameChoiceCount = 0, lastPlayerInput = null;
     let selectedNumber = null;
+    let soundEnabled = localStorage.getItem('soundEnabled') !== 'false';
+    let vibrationEnabled = localStorage.getItem('vibrationEnabled') !== 'false';
 
     // DOM Elements
     const playerRunInput = document.getElementById('player-run');
@@ -987,6 +1334,23 @@
         currentPlayer = JSON.parse(savedPlayer);
         showGameScreen();
         updatePlayerDisplay();
+      }
+      
+      // Initialize particles
+      createParticles();
+      
+      // Restore sound/vibration settings
+      soundEnabled = localStorage.getItem('soundEnabled') !== 'false';
+      vibrationEnabled = localStorage.getItem('vibrationEnabled') !== 'false';
+      document.getElementById('sound-toggle').textContent = soundEnabled ? '🔊' : '🔇';
+      document.getElementById('sound-toggle').classList.toggle('muted', !soundEnabled);
+      document.getElementById('vibration-toggle').textContent = vibrationEnabled ? '📳' : '📴';
+      document.getElementById('vibration-toggle').classList.toggle('disabled', !vibrationEnabled);
+      
+      // Restore input mode
+      const savedInputMode = localStorage.getItem('inputMode') || 'buttons';
+      if (savedInputMode === 'keyboard') {
+        setInputMode('keyboard');
       }
     };
 
@@ -1249,7 +1613,14 @@
       
       // Update button styles
       document.querySelectorAll('.number-btn').forEach(btn => btn.classList.remove('selected'));
-      event.target.classList.add('selected');
+      if (event && event.target) {
+        event.target.classList.add('selected');
+        event.target.classList.add('heartbeat');
+        setTimeout(() => event.target.classList.remove('heartbeat'), 600);
+      }
+      
+      playSound('click');
+      vibrate([30]);
     }
 
     // ============ TOSS ============
@@ -1257,9 +1628,8 @@
       const coin = document.getElementById('coin');
       coin.classList.add('flipping');
       
-      // Play coin sound
-      const coinSound = document.getElementById('coinflip');
-      if (coinSound) coinSound.play().catch(() => {});
+      playSound('coin');
+      vibrate([50, 30, 50, 30, 50]);
       
       setTimeout(() => {
         coin.classList.remove('flipping');
@@ -1273,6 +1643,8 @@
           document.getElementById('toss-section').style.display = 'none';
           document.getElementById('choice-section').style.display = 'block';
           showToast("🎉 You won the toss!");
+          playSound('wicket');
+          vibrate([100, 50, 100]);
         } else {
           const compRole = Math.random() < 0.5 ? 'batting' : 'bowling';
           playerChoice = (compRole === 'batting') ? 'bowling' : 'batting';
@@ -1280,6 +1652,8 @@
           messageBox.innerHTML = `🪙 You chose <strong>${playerToss}</strong>, Coin shows <strong>${compToss}</strong> ${coinEmoji}<br>🤖 Computer won and chose to ${compRole}. You are ${playerChoice}!`;
           document.getElementById('toss-section').style.display = 'none';
           showToast(`You are ${playerChoice}! ${playerChoice === 'batting' ? '🏏' : '⚾'}`);
+          playSound('out');
+          vibrate([50, 50, 50]);
           setTimeout(startGame, 1500);
         }
       }, 1000);
@@ -1290,6 +1664,8 @@
       gamePhase = choice;
       document.getElementById('choice-section').style.display = 'none';
       showToast(`You chose ${choice}! ${choice === 'batting' ? '🏏' : '⚾'}`);
+      playSound('start');
+      vibrate([100]);
       startGame();
     }
 
@@ -1298,6 +1674,19 @@
       const phaseEmoji = playerChoice === 'batting' ? '🏏' : '⚾';
       const inningsText = secondPhase ? ' (2nd Innings)' : '';
       gameStatus.innerHTML = `${phaseEmoji} You are <strong>${playerChoice.toUpperCase()}</strong>${inningsText}`;
+      
+      // Show target in 2nd innings
+      if (secondPhase) {
+        const targetDisplay = document.getElementById('target-display');
+        targetDisplay.style.display = 'block';
+        const target = playerChoice === 'batting' ? c_run + 1 : p_run + 1;
+        document.getElementById('target-value').textContent = target;
+      }
+      
+      // Focus keyboard input if in keyboard mode
+      if (inputMode === 'keyboard') {
+        document.getElementById('keyboard-input').focus();
+      }
     }
 
     // ============ GAME LOGIC ============
@@ -1552,11 +1941,144 @@
     }
 
     function playSound(type) {
-      const soundElement = document.getElementById(type === 'win' ? 'clapssound' : 'losinghorn');
+      if (soundEnabled === false) return;
+      
+      let soundId;
+      switch(type) {
+        case 'win': soundId = 'clapssound'; break;
+        case 'lose': soundId = 'losinghorn'; break;
+        case 'click': soundId = 'clicksound'; break;
+        case 'run': soundId = 'runsound'; break;
+        case 'out': soundId = 'outsound'; break;
+        case 'wicket': soundId = 'wicketsound'; break;
+        case 'six': soundId = 'sixsound'; break;
+        case 'four': soundId = 'foursound'; break;
+        case 'coin': soundId = 'coinflip'; break;
+        case 'start': soundId = 'startsound'; break;
+        default: soundId = 'clicksound';
+      }
+      
+      const soundElement = document.getElementById(soundId);
       if (soundElement) {
         soundElement.currentTime = 0;
+        soundElement.volume = 0.5;
         soundElement.play().catch(() => {});
       }
+    }
+
+    // ============ VIBRATION ============
+    function vibrate(pattern = [50]) {
+      if (vibrationEnabled && navigator.vibrate) {
+        navigator.vibrate(pattern);
+      }
+    }
+
+    function toggleVibration() {
+      vibrationEnabled = !vibrationEnabled;
+      const toggle = document.getElementById('vibration-toggle');
+      toggle.classList.toggle('disabled', !vibrationEnabled);
+      toggle.textContent = vibrationEnabled ? '📳' : '📴';
+      localStorage.setItem('vibrationEnabled', vibrationEnabled);
+      showToast(vibrationEnabled ? '📳 Vibration ON' : '📴 Vibration OFF');
+      if (vibrationEnabled) vibrate([100, 50, 100]);
+    }
+
+    function toggleSound() {
+      soundEnabled = !soundEnabled;
+      const toggle = document.getElementById('sound-toggle');
+      toggle.classList.toggle('muted', !soundEnabled);
+      toggle.textContent = soundEnabled ? '🔊' : '🔇';
+      localStorage.setItem('soundEnabled', soundEnabled);
+      showToast(soundEnabled ? '🔊 Sound ON' : '🔇 Sound OFF');
+      if (soundEnabled) playSound('click');
+    }
+
+    // ============ INPUT MODE ============
+    let inputMode = 'buttons';
+
+    function setInputMode(mode) {
+      inputMode = mode;
+      document.getElementById('btn-mode').classList.toggle('active', mode === 'buttons');
+      document.getElementById('keyboard-mode').classList.toggle('active', mode === 'keyboard');
+      document.getElementById('button-input-wrapper').classList.toggle('hidden', mode === 'keyboard');
+      document.getElementById('keyboard-input-wrapper').classList.toggle('active', mode === 'keyboard');
+      
+      if (mode === 'keyboard') {
+        document.getElementById('keyboard-input').focus();
+      }
+      
+      playSound('click');
+      localStorage.setItem('inputMode', mode);
+    }
+
+    function validateKeyboardInput(input) {
+      let value = input.value;
+      
+      // Handle "10" as special case
+      if (value.length > 2) {
+        value = value.slice(0, 2);
+      }
+      
+      if (value === '' || value === '1' || value === '10') {
+        // Valid
+      } else if (parseInt(value) >= 0 && parseInt(value) <= 10) {
+        // Valid
+      } else if (parseInt(value) > 10) {
+        value = '10';
+      }
+      
+      input.value = value;
+      
+      if (value !== '' && parseInt(value) >= 0 && parseInt(value) <= 10) {
+        playerRunInput.value = parseInt(value);
+        vibrate([30]);
+      }
+    }
+
+    // ============ PARTICLES BACKGROUND ============
+    function createParticles() {
+      const container = document.getElementById('particles');
+      const particleCount = 30;
+      
+      for (let i = 0; i < particleCount; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.top = Math.random() * 100 + '%';
+        particle.style.animationDelay = Math.random() * 8 + 's';
+        particle.style.animationDuration = (Math.random() * 4 + 6) + 's';
+        particle.style.opacity = Math.random() * 0.5 + 0.2;
+        particle.style.width = (Math.random() * 4 + 2) + 'px';
+        particle.style.height = particle.style.width;
+        container.appendChild(particle);
+      }
+    }
+
+    // ============ SPARKLE EFFECT ============
+    function createSparkle(x, y) {
+      for (let i = 0; i < 5; i++) {
+        const sparkle = document.createElement('div');
+        sparkle.className = 'sparkle';
+        sparkle.style.left = (x + Math.random() * 40 - 20) + 'px';
+        sparkle.style.top = (y + Math.random() * 40 - 20) + 'px';
+        document.body.appendChild(sparkle);
+        setTimeout(() => sparkle.remove(), 600);
+      }
+    }
+
+    // ============ FLOATING SCORE ============
+    function showFloatingScore(value, isPositive = true) {
+      const scoreCard = document.querySelector('.score-card.player');
+      const rect = scoreCard.getBoundingClientRect();
+      
+      const popup = document.createElement('div');
+      popup.className = 'score-popup' + (isPositive ? '' : ' negative');
+      popup.textContent = (isPositive ? '+' : '') + value;
+      popup.style.left = rect.left + rect.width / 2 + 'px';
+      popup.style.top = rect.top + 'px';
+      document.body.appendChild(popup);
+      
+      setTimeout(() => popup.remove(), 1000);
     }
 
     function resetGame() {
@@ -1579,9 +2101,14 @@
       document.getElementById('toss-section').style.display = 'block';
       document.getElementById('choice-section').style.display = 'none';
       document.getElementById('coin').querySelector('.coin-inner').textContent = '🪙';
+      document.getElementById('target-display').style.display = 'none';
       
       document.querySelectorAll('.number-btn').forEach(btn => btn.classList.remove('selected'));
       playerRunInput.value = '';
+      document.getElementById('keyboard-input').value = '';
+      
+      playSound('click');
+      vibrate([50]);
     }
 
     // ============ EFFECTS ============
@@ -1595,7 +2122,12 @@
 
     function animateOut() {
       container.classList.add("shake");
-      setTimeout(() => container.classList.remove("shake"), 600);
+      container.classList.add("vibrate");
+      vibrate([100, 50, 100, 50, 100]);
+      setTimeout(() => {
+        container.classList.remove("shake");
+        container.classList.remove("vibrate");
+      }, 600);
     }
 
     function createConfetti() {
@@ -1612,6 +2144,8 @@
         
         setTimeout(() => confetti.remove(), 5000);
       }
+      
+      vibrate([200, 100, 200, 100, 200]);
     }
 
     // ============ SCREENSHOT ============

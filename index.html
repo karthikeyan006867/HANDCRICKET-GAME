@@ -1054,6 +1054,51 @@
       animation: float 3s ease-in-out infinite;
     }
 
+    /* Difficulty Badge */
+    .difficulty-badge {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border-radius: 50px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin: 10px auto;
+      width: fit-content;
+      transition: all 0.3s ease;
+    }
+
+    .difficulty-badge.easy {
+      background: linear-gradient(135deg, rgba(16,185,129,0.2), rgba(16,185,129,0.1));
+      border: 2px solid var(--success);
+      color: var(--success);
+    }
+
+    .difficulty-badge.medium {
+      background: linear-gradient(135deg, rgba(245,158,11,0.2), rgba(245,158,11,0.1));
+      border: 2px solid var(--accent);
+      color: var(--accent);
+    }
+
+    .difficulty-badge.hard {
+      background: linear-gradient(135deg, rgba(239,68,68,0.2), rgba(239,68,68,0.1));
+      border: 2px solid var(--danger);
+      color: var(--danger);
+    }
+
+    .difficulty-badge.nightmare {
+      background: linear-gradient(135deg, rgba(127,29,29,0.3), rgba(220,38,38,0.2));
+      border: 2px solid #dc2626;
+      color: #ff4444;
+      animation: nightmarePulse 1s infinite;
+    }
+
+    @keyframes nightmarePulse {
+      0%, 100% { box-shadow: 0 0 10px rgba(220,38,38,0.3); }
+      50% { box-shadow: 0 0 20px rgba(220,38,38,0.6); }
+    }
+
     /* Target Display */
     .target-display {
       background: linear-gradient(135deg, rgba(239,68,68,0.2), rgba(245,158,11,0.2));
@@ -1237,6 +1282,12 @@
 
       <div id="game-section" style="display:none;">
         <div id="game-status">🏏 Game On!</div>
+        
+        <!-- Difficulty Badge -->
+        <div id="difficulty-badge" class="difficulty-badge">
+          <span id="difficulty-emoji">😊</span>
+          <span id="difficulty-text">Easy</span>
+        </div>
         
         <!-- Target Display (shows in 2nd innings) -->
         <div id="target-display" class="target-display" style="display: none;">
@@ -1722,6 +1773,33 @@
         const difficultyEmoji = level === 'easy' ? '😊' : level === 'medium' ? '😐' : '😈';
         showToast(`Difficulty: ${level.charAt(0).toUpperCase() + level.slice(1)} ${difficultyEmoji}`);
       }
+      
+      // Update difficulty badge if visible
+      updateDifficultyBadge();
+    }
+
+    function updateDifficultyBadge() {
+      const badge = document.getElementById('difficulty-badge');
+      const emoji = document.getElementById('difficulty-emoji');
+      const text = document.getElementById('difficulty-text');
+      
+      if (!badge) return;
+      
+      // Remove all difficulty classes
+      badge.classList.remove('easy', 'medium', 'hard', 'nightmare');
+      badge.classList.add(difficulty);
+      
+      // Set emoji and text based on difficulty
+      const difficultyInfo = {
+        'easy': { emoji: '😊', text: 'Easy Mode' },
+        'medium': { emoji: '😐', text: 'Medium Mode' },
+        'hard': { emoji: '😈', text: 'Hard Mode' },
+        'nightmare': { emoji: '💀', text: 'Nightmare Mode' }
+      };
+      
+      const info = difficultyInfo[difficulty] || difficultyInfo['easy'];
+      emoji.textContent = info.emoji;
+      text.textContent = info.text;
     }
 
     // ============ NUMBER SELECTION ============
@@ -1793,6 +1871,9 @@
       const phaseEmoji = playerChoice === 'batting' ? '🏏' : '⚾';
       const inningsText = secondPhase ? ' (2nd Innings)' : '';
       gameStatus.innerHTML = `${phaseEmoji} You are <strong>${playerChoice.toUpperCase()}</strong>${inningsText}`;
+      
+      // Update difficulty badge
+      updateDifficultyBadge();
       
       // Show target in 2nd innings
       if (secondPhase) {
@@ -2018,10 +2099,21 @@
       let result = '';
       let gameResult = '';
       
+      // Get difficulty display info
+      const difficultyInfo = {
+        'easy': { emoji: '😊', label: 'Easy', color: '#10b981' },
+        'medium': { emoji: '😐', label: 'Medium', color: '#f59e0b' },
+        'hard': { emoji: '😈', label: 'Hard', color: '#ef4444' },
+        'nightmare': { emoji: '💀', label: 'Nightmare', color: '#dc2626' }
+      };
+      const diffInfo = difficultyInfo[difficulty] || difficultyInfo['easy'];
+      const difficultyBadge = `<div style="display: inline-block; padding: 5px 15px; border-radius: 20px; background: rgba(255,255,255,0.1); border: 2px solid ${diffInfo.color}; color: ${diffInfo.color}; font-size: 0.9rem; margin: 10px 0;">${diffInfo.emoji} ${diffInfo.label} Mode</div>`;
+      
       if (p_run > c_run) {
         result = `
           <div style="font-size: 3rem; margin-bottom: 10px;">🎉🏆🎉</div>
           <strong>YOU WIN!</strong><br>
+          ${difficultyBadge}<br>
           Your Score: <strong>${p_run}</strong> | Computer: <strong>${c_run}</strong><br>
           Victory by ${p_run - c_run} runs! 🎊
         `;
@@ -2032,6 +2124,7 @@
         result = `
           <div style="font-size: 3rem; margin-bottom: 10px;">😔💔😔</div>
           <strong>YOU LOSE!</strong><br>
+          ${difficultyBadge}<br>
           Your Score: <strong>${p_run}</strong> | Computer: <strong>${c_run}</strong><br>
           ${difficulty === 'nightmare' ? 'Did you really expect to win Nightmare mode? 💀' : 'Better luck next time! 💪'}
         `;
@@ -2041,6 +2134,7 @@
         result = `
           <div style="font-size: 3rem; margin-bottom: 10px;">🤝</div>
           <strong>IT'S A TIE!</strong><br>
+          ${difficultyBadge}<br>
           Both scored: <strong>${p_run}</strong> runs!<br>
           What a match! 🎭
         `;
@@ -2351,7 +2445,9 @@
       shareBtn.className = 'warning';
       shareBtn.innerHTML = '📤 Share';
       shareBtn.onclick = function() {
-        const text = `🏏 I scored ${p_run} runs against the computer's ${c_run} in Odd or Even Cricket! ${p_run > c_run ? '🏆 I WON!' : p_run < c_run ? '💔 Lost' : '🤝 Tie'}`;
+        const diffEmoji = difficulty === 'nightmare' ? '💀' : difficulty === 'hard' ? '😈' : difficulty === 'medium' ? '😐' : '😊';
+        const diffLabel = difficulty.charAt(0).toUpperCase() + difficulty.slice(1);
+        const text = `🏏 I scored ${p_run} runs against the computer's ${c_run} in Odd or Even Cricket on ${diffEmoji} ${diffLabel} mode! ${p_run > c_run ? '🏆 I WON!' : p_run < c_run ? '💔 Lost' : '🤝 Tie'}`;
         const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;
         window.open(whatsappUrl, '_blank');
       };

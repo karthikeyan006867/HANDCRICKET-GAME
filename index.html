@@ -3,44 +3,77 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Odd or Even Cricket Game</title>
+  <title>🏏 Odd or Even Cricket Game - Ultimate Edition</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg-color: #000;
+      --bg-color: #0a0a1a;
       --text-color: #fff;
-      --container-bg: #fff;
-      --container-text: #000;
-      --score-bg: #f1f3f5;
+      --container-bg: linear-gradient(145deg, #1a1a2e, #16213e);
+      --container-text: #fff;
+      --score-bg: rgba(255,255,255,0.1);
+      --primary: #00d4ff;
+      --secondary: #7c3aed;
+      --accent: #f59e0b;
+      --danger: #ef4444;
+      --success: #10b981;
+      --neon-glow: 0 0 20px rgba(0,212,255,0.5);
     }
 
-    body.dark {
-      --bg-color: #000;
-      --text-color: #fff;
-      --container-bg: #fff;
-      --container-text: #000;
-      --score-bg: #f1f3f5;
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: var(--bg-color);
+      color: var(--text-color);
+      font-family: 'Poppins', sans-serif;
+      min-height: 100vh;
+      padding: 20px;
+      transition: all 0.4s ease;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(circle at 20% 80%, rgba(120,0,255,0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(0,212,255,0.15) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(245,158,11,0.05) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
     }
 
     body.light {
-      --bg-color: #f5f5f5;
-      --text-color: #000;
-      --container-bg: #ffffff;
-      --container-text: #000;
-      --score-bg: #e0e0e0;
+      --bg-color: #f0f4f8;
+      --text-color: #1a1a2e;
+      --container-bg: linear-gradient(145deg, #ffffff, #e8ecf0);
+      --container-text: #1a1a2e;
+      --score-bg: rgba(0,0,0,0.05);
     }
 
     body.purple {
-      --bg-color: #7F00FF;
-      --text-color: #fff;
-      --container-bg: #ffffff;
-      --container-text: #000;
-      --score-bg: #f3e9ff;
+      --bg-color: #2d1b69;
+      --container-bg: linear-gradient(145deg, #3d2785, #4c1d95);
     }
 
     body.rainbow {
-      background: linear-gradient(270deg, red, orange, yellow, green, blue, indigo, violet, red);
-      background-size: 1400% 1400%;
-      animation: rainbowBG 12s linear infinite;
+      background: linear-gradient(270deg, #ff6b6b, #feca57, #48dbfb, #ff9ff3, #54a0ff, #5f27cd);
+      background-size: 600% 600%;
+      animation: rainbowBG 8s ease infinite;
+    }
+
+    body.nightmare-mode {
+      --bg-color: #0d0000;
+      --container-bg: linear-gradient(145deg, #1a0000, #2d0000);
+      animation: nightmareFlicker 0.1s infinite;
     }
 
     @keyframes rainbowBG {
@@ -49,266 +82,895 @@
       100% { background-position: 0% 50%; }
     }
 
+    @keyframes nightmareFlicker {
+      0%, 100% { filter: brightness(1); }
+      50% { filter: brightness(0.95) hue-rotate(5deg); }
+    }
+
     @keyframes shake {
-      0% { transform: translateX(0); }
-      20% { transform: translateX(-5px); }
-      40% { transform: translateX(5px); }
-      60% { transform: translateX(-5px); }
-      80% { transform: translateX(5px); }
-      100% { transform: translateX(0); }
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-8px); }
+      40%, 80% { transform: translateX(8px); }
     }
 
-    .shake {
-      animation: shake 0.5s;
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
     }
 
-    body {
-      background-color: var(--bg-color);
-      color: var(--text-color);
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 20px;
-      transition: background-color 0.4s ease, color 0.4s ease;
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
     }
+
+    @keyframes glow {
+      0%, 100% { box-shadow: 0 0 20px rgba(0,212,255,0.3); }
+      50% { box-shadow: 0 0 40px rgba(0,212,255,0.6), 0 0 60px rgba(0,212,255,0.3); }
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes bounceIn {
+      0% { opacity: 0; transform: scale(0.3); }
+      50% { transform: scale(1.05); }
+      70% { transform: scale(0.9); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes confetti {
+      0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+    }
+
+    @keyframes numberPop {
+      0% { transform: scale(0); }
+      50% { transform: scale(1.3); }
+      100% { transform: scale(1); }
+    }
+
+    .shake { animation: shake 0.5s ease; }
+    .pulse { animation: pulse 0.5s ease; }
+    .float { animation: float 3s ease-in-out infinite; }
+    .glow { animation: glow 2s ease-in-out infinite; }
 
     .container {
-      max-width: 490px;
+      max-width: 500px;
       margin: auto;
-      background-color: var(--container-bg);
+      background: var(--container-bg);
       color: var(--container-text);
-      padding: 25px 30px;
-      border-radius: 8px;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+      padding: 30px;
+      border-radius: 24px;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+      position: relative;
+      z-index: 1;
+      animation: slideUp 0.6s ease;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    /* Login/Register Screen */
+    #login-screen {
+      text-align: center;
+    }
+
+    #login-screen h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    #login-screen .subtitle {
+      color: rgba(255,255,255,0.7);
+      margin-bottom: 30px;
+      font-size: 1rem;
+    }
+
+    .login-emoji {
+      font-size: 4rem;
+      animation: float 3s ease-in-out infinite;
+      margin-bottom: 20px;
+    }
+
+    .input-group {
+      margin-bottom: 20px;
+    }
+
+    .input-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.8);
+    }
+
+    .input-group input {
+      width: 100%;
+      padding: 15px 20px;
+      font-size: 1rem;
+      border: 2px solid rgba(255,255,255,0.2);
+      border-radius: 12px;
+      background: rgba(255,255,255,0.1);
+      color: var(--text-color);
+      transition: all 0.3s ease;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .input-group input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 20px rgba(0,212,255,0.3);
+    }
+
+    .input-group input::placeholder {
+      color: rgba(255,255,255,0.4);
+    }
+
+    .login-buttons {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    /* Header */
+    .game-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .player-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255,255,255,0.1);
+      padding: 8px 16px;
+      border-radius: 50px;
+    }
+
+    .player-avatar {
+      width: 35px;
+      height: 35px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+    }
+
+    .player-name {
+      font-weight: 600;
+    }
+
+    .player-rank {
+      font-size: 0.8rem;
+      color: var(--accent);
     }
 
     h2 {
       text-align: center;
-      color: red;
-      margin-top: 10px;
+      font-size: 1.8rem;
+      margin: 15px 0;
+      background: linear-gradient(135deg, var(--primary), var(--secondary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
     .top-controls {
       display: flex;
-      justify-content: space-between;
-      margin-bottom: 10px;
+      justify-content: center;
+      gap: 8px;
+      flex-wrap: wrap;
     }
 
     button {
-      margin: 5px;
-      padding: 10px 18px;
-      font-size: 16px;
+      padding: 12px 20px;
+      font-size: 14px;
       cursor: pointer;
       border: none;
-      border-radius: 5px;
-      background: #007bff;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
       color: white;
-      transition: background-color 0.3s ease;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      font-family: 'Poppins', sans-serif;
+      position: relative;
+      overflow: hidden;
+    }
+
+    button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: 0.5s;
+    }
+
+    button:hover::before {
+      left: 100%;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(0,212,255,0.3);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    button.danger {
+      background: linear-gradient(135deg, var(--danger), #dc2626);
+    }
+
+    button.success {
+      background: linear-gradient(135deg, var(--success), #059669);
+    }
+
+    button.warning {
+      background: linear-gradient(135deg, var(--accent), #d97706);
+    }
+
+    button.nightmare-btn {
+      background: linear-gradient(135deg, #dc2626, #7f1d1d);
+      animation: pulse 1s infinite;
+    }
+
+    button.small {
+      padding: 8px 14px;
+      font-size: 12px;
     }
 
     #message-box {
-      background: #eef2f7;
-      color: #000;
-      padding: 10px;
-      border-radius: 5px;
-      margin-bottom: 15px;
-      min-height: 50px;
+      background: linear-gradient(135deg, rgba(0,212,255,0.1), rgba(124,58,237,0.1));
+      color: var(--text-color);
+      padding: 20px;
+      border-radius: 16px;
+      margin: 20px 0;
+      min-height: 60px;
       font-weight: 600;
       text-align: center;
+      border: 1px solid rgba(0,212,255,0.2);
+      animation: slideUp 0.4s ease;
     }
 
     .scoreboard {
       margin-top: 20px;
-      display: flex;
-      justify-content: space-between;
-      font-weight: 600;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+
+    .score-card {
       background: var(--score-bg);
-      color: #000;
-      padding: 10px 15px;
-      border-radius: 5px;
+      padding: 20px;
+      border-radius: 16px;
+      text-align: center;
+      border: 1px solid rgba(255,255,255,0.1);
+      transition: all 0.3s ease;
+    }
+
+    .score-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
+    .score-card.player {
+      border-color: var(--primary);
+    }
+
+    .score-card.computer {
+      border-color: var(--danger);
+    }
+
+    .score-label {
+      font-size: 0.9rem;
+      color: rgba(255,255,255,0.7);
+      margin-bottom: 8px;
+    }
+
+    .score-value {
+      font-size: 2.5rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
     .choices-display {
-      margin-top: 15px;
-      display: flex;
-      justify-content: space-between;
-      font-weight: 500;
-      color: #000;
+      margin-top: 20px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+
+    .choice-card {
+      background: var(--score-bg);
+      padding: 15px;
+      border-radius: 12px;
+      text-align: center;
+    }
+
+    .choice-label {
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.6);
+      margin-bottom: 5px;
+    }
+
+    .choice-value {
+      font-size: 2rem;
+      font-weight: 700;
+    }
+
+    .choice-value.pop {
+      animation: numberPop 0.3s ease;
     }
 
     #player-run {
-      width: 80px;
-      padding: 6px;
-      font-size: 16px;
-      margin-right: 8px;
+      width: 100%;
+      padding: 18px;
+      font-size: 1.5rem;
+      text-align: center;
+      border: 2px solid rgba(0,212,255,0.3);
+      border-radius: 16px;
+      background: rgba(255,255,255,0.05);
+      color: var(--text-color);
+      font-family: 'Poppins', sans-serif;
+      font-weight: 700;
+      margin-bottom: 15px;
+      transition: all 0.3s ease;
+    }
+
+    #player-run:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 30px rgba(0,212,255,0.3);
     }
 
     .center-buttons {
       text-align: center;
-      margin: 15px 0;
+      margin: 20px 0;
     }
 
     .difficulty-box {
-      background-color: #ffe;
-      color: #000;
-      padding: 10px;
-      border-radius: 10px;
-      margin: 10px 0;
+      background: linear-gradient(135deg, rgba(245,158,11,0.1), rgba(124,58,237,0.1));
+      padding: 20px;
+      border-radius: 16px;
+      margin: 15px 0;
       text-align: center;
+      border: 1px solid rgba(245,158,11,0.2);
       display: none;
     }
 
+    .difficulty-box p {
+      margin-bottom: 15px;
+      font-weight: 600;
+    }
+
+    .difficulty-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+    }
+
     .difficulty-box button.selected {
-      background-color: #dc3545;
-    }
-
-    .rainbow-popup {
-      position: fixed;
-      top: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #ff0;
-      padding: 12px 25px;
-      color: #000;
-      font-weight: bold;
-      border: 2px solid #000;
-      border-radius: 10px;
-      animation: fadeOut 5s forwards;
-      z-index: 1000;
-    }
-
-    @keyframes fadeOut {
-      0% { opacity: 1; }
-      80% { opacity: 1; }
-      100% { opacity: 0; display: none; }
+      box-shadow: 0 0 20px currentColor;
+      transform: scale(1.05);
     }
 
     #game-status {
       text-align: center;
-      font-weight: bold;
-      margin: 10px 0;
+      font-weight: 700;
+      font-size: 1.2rem;
+      margin: 15px 0;
+      padding: 15px;
+      background: rgba(0,212,255,0.1);
+      border-radius: 12px;
+      border: 1px solid rgba(0,212,255,0.2);
     }
 
-    #share-btn {
+    /* Leaderboard Modal */
+    .modal {
       display: none;
-      background-color: #25D366;
-    }
-    
-    .screenshot-preview {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
       background: rgba(0,0,0,0.8);
+      backdrop-filter: blur(10px);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .modal.active {
       display: flex;
+    }
+
+    .modal-content {
+      background: var(--container-bg);
+      padding: 30px;
+      border-radius: 24px;
+      max-width: 500px;
+      width: 100%;
+      max-height: 80vh;
+      overflow-y: auto;
+      animation: bounceIn 0.5s ease;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .modal-header h3 {
+      font-size: 1.5rem;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .close-modal {
+      background: var(--danger);
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      padding: 0;
+    }
+
+    .leaderboard-list {
+      list-style: none;
+    }
+
+    .leaderboard-item {
+      display: flex;
+      align-items: center;
+      padding: 15px;
+      margin-bottom: 10px;
+      background: var(--score-bg);
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.1);
+      transition: all 0.3s ease;
+    }
+
+    .leaderboard-item:hover {
+      transform: translateX(5px);
+      border-color: var(--primary);
+    }
+
+    .leaderboard-item.gold { border-left: 4px solid #ffd700; }
+    .leaderboard-item.silver { border-left: 4px solid #c0c0c0; }
+    .leaderboard-item.bronze { border-left: 4px solid #cd7f32; }
+
+    .rank-badge {
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      margin-right: 15px;
+      background: rgba(255,255,255,0.1);
+    }
+
+    .rank-badge.gold { background: linear-gradient(135deg, #ffd700, #ffb700); color: #000; }
+    .rank-badge.silver { background: linear-gradient(135deg, #c0c0c0, #a0a0a0); color: #000; }
+    .rank-badge.bronze { background: linear-gradient(135deg, #cd7f32, #a0522d); color: #fff; }
+
+    .player-details {
+      flex: 1;
+    }
+
+    .player-details .name {
+      font-weight: 600;
+      margin-bottom: 3px;
+    }
+
+    .player-details .stats {
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.6);
+    }
+
+    .player-details .wins {
+      color: var(--success);
+      font-weight: 600;
+    }
+
+    /* Stats Display */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin: 15px 0;
+    }
+
+    .stat-item {
+      background: var(--score-bg);
+      padding: 15px;
+      border-radius: 12px;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.6);
+    }
+
+    /* Number Buttons */
+    .number-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .number-btn {
+      padding: 15px;
+      font-size: 1.3rem;
+      font-weight: 700;
+      background: rgba(255,255,255,0.1);
+      border: 2px solid rgba(0,212,255,0.3);
+      border-radius: 12px;
+      transition: all 0.2s ease;
+    }
+
+    .number-btn:hover {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border-color: transparent;
+      transform: scale(1.1);
+    }
+
+    .number-btn.selected {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border-color: transparent;
+      box-shadow: 0 0 20px rgba(0,212,255,0.5);
+    }
+
+    /* Confetti */
+    .confetti {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      top: -10px;
+      z-index: 9999;
+      animation: confetti 3s linear forwards;
+    }
+
+    /* Screenshot Preview */
+    .screenshot-preview {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.9);
+      display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
       z-index: 1000;
+      padding: 20px;
     }
-    
+
     .screenshot-preview img {
       max-width: 90%;
-      max-height: 90%;
-      border: 5px solid white;
-      border-radius: 10px;
+      max-height: 70%;
+      border: 3px solid var(--primary);
+      border-radius: 16px;
+      box-shadow: 0 0 50px rgba(0,212,255,0.3);
     }
-    
-    .screenshot-preview .close-btn {
-      position: absolute;
+
+    .screenshot-buttons {
+      display: flex;
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
       top: 20px;
-      right: 20px;
-      background: #dc3545;
-      color: white;
-      border: none;
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      font-size: 20px;
-      cursor: pointer;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      padding: 15px 30px;
+      border-radius: 50px;
+      font-weight: 600;
+      z-index: 9999;
+      animation: bounceIn 0.5s ease, fadeOut 0.5s ease 4.5s forwards;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.3);
     }
-    
-    .screenshot-preview .download-btn {
-      position: absolute;
-      bottom: 20px;
-      background: #28a745;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      padding: 10px 20px;
-      font-size: 16px;
-      cursor: pointer;
+
+    @keyframes fadeOut {
+      to { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+    }
+
+    /* Nightmare Warning */
+    .nightmare-warning {
+      background: linear-gradient(135deg, #7f1d1d, #450a0a);
+      border: 2px solid #dc2626;
+      color: #fecaca;
+      padding: 15px;
+      border-radius: 12px;
+      margin: 15px 0;
+      text-align: center;
+      animation: pulse 1s infinite;
+    }
+
+    .nightmare-warning .skull {
+      font-size: 2rem;
+      animation: shake 0.5s infinite;
+    }
+
+    /* Toss Animation */
+    .coin {
+      width: 80px;
+      height: 80px;
+      margin: 20px auto;
+      position: relative;
+      perspective: 1000px;
+    }
+
+    .coin-inner {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #ffd700, #ffb700);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      box-shadow: 0 5px 20px rgba(255,215,0,0.4);
+      transition: transform 0.6s;
+    }
+
+    .coin.flipping .coin-inner {
+      animation: coinFlip 1s ease;
+    }
+
+    @keyframes coinFlip {
+      0% { transform: rotateY(0deg); }
+      100% { transform: rotateY(1800deg); }
+    }
+
+    /* Responsive */
+    @media (max-width: 480px) {
+      .container { padding: 20px; }
+      h2 { font-size: 1.4rem; }
+      .number-grid { grid-template-columns: repeat(3, 1fr); }
+      .top-controls { gap: 5px; }
+      button { padding: 10px 14px; font-size: 12px; }
     }
   </style>
   <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 </head>
 <body class="dark">
   <div class="container" id="main-container">
-    <div class="top-controls">
-      <button onclick="toggleDifficulty()">🧠 Difficulty</button>
-      <button onclick="toggleTheme()">🎨 Change Theme</button>
+    <!-- Login/Register Screen -->
+    <div id="login-screen">
+      <div class="login-emoji">🏏</div>
+      <h1>Odd or Even</h1>
+      <p class="subtitle">The Ultimate Cricket Game ✨</p>
+      
+      <div class="input-group">
+        <label for="username-input">👤 Enter Your Name</label>
+        <input type="text" id="username-input" placeholder="Your awesome name..." maxlength="20" autocomplete="off">
+      </div>
+      
+      <div class="login-buttons">
+        <button onclick="handleLogin()" class="success">🚀 Start Playing</button>
+        <button onclick="showLeaderboard()" class="warning">🏆 Leaderboard</button>
+      </div>
+      
+      <p id="login-error" style="color: #ef4444; margin-top: 15px; display: none;"></p>
     </div>
 
-    <h2>Odd or Even Cricket Game</h2>
-
-    <div id="message-box">Welcome! Choose HEAD or TAILS to start the toss.</div>
-
-    <div class="difficulty-box" id="difficulty-box">
-      <p>Select difficulty level:</p>
-      <button onclick="setDifficulty('easy')" id="easy-btn">Easy</button>
-      <button onclick="setDifficulty('medium')" id="medium-btn">Medium</button>
-      <button onclick="setDifficulty('hard')" id="hard-btn">Hard</button>
-    </div>
-
-    <div id="toss-section" class="center-buttons">
-      <button onclick="toss('head')">HEAD</button>
-      <button onclick="toss('tails')">TAILS</button>
-    </div>
-
-    <div id="choice-section" class="center-buttons" style="display:none;">
-      <p>Choose your role:</p>
-      <button onclick="setChoice('batting')">Batting</button>
-      <button onclick="setChoice('bowling')">Bowling</button>
-    </div>
-
-    <div id="game-section" style="display:none;">
-      <div id="game-status"></div>
-      <div class="center-buttons">
-        <input type="number" id="player-run" min="0" max="10" placeholder="0–10" />
-        <button onclick="playRound()">Play</button>
+    <!-- Game Screen -->
+    <div id="game-screen" style="display: none;">
+      <div class="game-header">
+        <div class="player-info">
+          <div class="player-avatar" id="player-avatar">?</div>
+          <div>
+            <div class="player-name" id="display-name">Player</div>
+            <div class="player-rank" id="display-rank">Rank: #--</div>
+          </div>
+        </div>
+        <button onclick="logout()" class="danger small">🚪 Logout</button>
       </div>
 
-      <div class="choices-display">
-        <div>Your choice: <span id="player-choice-display">-</span></div>
-        <div>Computer choice: <span id="computer-choice-display">-</span></div>
+      <div class="top-controls">
+        <button onclick="toggleDifficulty()" class="small">🧠 Difficulty</button>
+        <button onclick="toggleTheme()" class="small">🎨 Theme</button>
+        <button onclick="showLeaderboard()" class="small warning">🏆 Ranks</button>
+        <button onclick="showStats()" class="small">📊 Stats</button>
       </div>
 
-      <div class="scoreboard">
-        <div>Your Score: <span id="player-score">0</span></div>
-        <div>Computer Score: <span id="computer-score">0</span></div>
-      </div>
-    </div>
+      <h2>🏏 Odd or Even Cricket 🏏</h2>
 
-    <div class="center-buttons">
-      <button onclick="resetGame()" style="background-color: #dc3545;">🔁 Reset Game</button>
-      <button id="screenshot-btn" onclick="captureAndShare()" style="background-color: #00a86b;">📸 Share Screenshot</button>
-      <a id="share-btn" target="_blank">📤 Share via WhatsApp</a>
+      <div id="message-box">Welcome! 👋 Choose HEAD or TAILS to start the toss. 🪙</div>
+
+      <div class="difficulty-box" id="difficulty-box">
+        <p>🎮 Select Difficulty Level:</p>
+        <div class="difficulty-buttons">
+          <button onclick="setDifficulty('easy')" id="easy-btn" class="success">😊 Easy</button>
+          <button onclick="setDifficulty('medium')" id="medium-btn" class="warning">😐 Medium</button>
+          <button onclick="setDifficulty('hard')" id="hard-btn" class="danger">😈 Hard</button>
+          <button onclick="setDifficulty('nightmare')" id="nightmare-btn" class="nightmare-btn">💀 Nightmare</button>
+        </div>
+        <div id="nightmare-warning" class="nightmare-warning" style="display: none;">
+          <div class="skull">💀☠️💀</div>
+          <p><strong>⚠️ WARNING:</strong> Nightmare mode is IMPOSSIBLE to win!</p>
+          <p>The computer will cheat to ensure you lose. Are you brave enough?</p>
+        </div>
+      </div>
+
+      <div id="toss-section" class="center-buttons">
+        <div class="coin" id="coin">
+          <div class="coin-inner">🪙</div>
+        </div>
+        <p style="margin-bottom: 15px;">Choose your side:</p>
+        <button onclick="toss('head')" class="success">👑 HEAD</button>
+        <button onclick="toss('tails')" class="warning">🦅 TAILS</button>
+      </div>
+
+      <div id="choice-section" class="center-buttons" style="display:none;">
+        <p style="margin-bottom: 15px;">🎯 You won the toss! Choose your role:</p>
+        <button onclick="setChoice('batting')" class="success">🏏 Batting</button>
+        <button onclick="setChoice('bowling')" class="warning">⚾ Bowling</button>
+      </div>
+
+      <div id="game-section" style="display:none;">
+        <div id="game-status">🏏 Game On!</div>
+        
+        <div class="number-grid" id="number-grid">
+          <button class="number-btn" onclick="selectNumber(0)">0️⃣</button>
+          <button class="number-btn" onclick="selectNumber(1)">1️⃣</button>
+          <button class="number-btn" onclick="selectNumber(2)">2️⃣</button>
+          <button class="number-btn" onclick="selectNumber(3)">3️⃣</button>
+          <button class="number-btn" onclick="selectNumber(4)">4️⃣</button>
+          <button class="number-btn" onclick="selectNumber(5)">5️⃣</button>
+          <button class="number-btn" onclick="selectNumber(6)">6️⃣</button>
+          <button class="number-btn" onclick="selectNumber(7)">7️⃣</button>
+          <button class="number-btn" onclick="selectNumber(8)">8️⃣</button>
+          <button class="number-btn" onclick="selectNumber(9)">9️⃣</button>
+          <button class="number-btn" onclick="selectNumber(10)">🔟</button>
+          <button onclick="playRound()" class="success">▶️ Play!</button>
+        </div>
+
+        <input type="hidden" id="player-run" value="" />
+
+        <div class="choices-display">
+          <div class="choice-card">
+            <div class="choice-label">👤 Your Choice</div>
+            <div class="choice-value" id="player-choice-display">-</div>
+          </div>
+          <div class="choice-card">
+            <div class="choice-label">🤖 Computer</div>
+            <div class="choice-value" id="computer-choice-display">-</div>
+          </div>
+        </div>
+
+        <div class="scoreboard">
+          <div class="score-card player">
+            <div class="score-label">👤 Your Score</div>
+            <div class="score-value" id="player-score">0</div>
+          </div>
+          <div class="score-card computer">
+            <div class="score-label">🤖 Computer</div>
+            <div class="score-value" id="computer-score">0</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="center-buttons" style="margin-top: 20px;">
+        <button onclick="resetGame()" class="danger">🔄 New Game</button>
+        <button id="screenshot-btn" onclick="captureAndShare()" class="success">📸 Share</button>
+      </div>
     </div>
 
     <audio id="clapssound" src="https://assets.mixkit.co/sfx/preview/mixkit-applause-500.mp3"></audio>
     <audio id="losinghorn" src="https://assets.mixkit.co/sfx/preview/mixkit-wrong-answer-fail-notification-946.mp3"></audio>
+    <audio id="coinflip" src="https://assets.mixkit.co/sfx/preview/mixkit-coins-handling-1939.mp3"></audio>
   </div>
+
+  <!-- Leaderboard Modal -->
+  <div class="modal" id="leaderboard-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>🏆 Leaderboard</h3>
+        <button class="close-modal" onclick="closeLeaderboard()">×</button>
+      </div>
+      <ul class="leaderboard-list" id="leaderboard-list">
+        <li style="text-align: center; padding: 20px;">Loading...</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Stats Modal -->
+  <div class="modal" id="stats-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>📊 Your Stats</h3>
+        <button class="close-modal" onclick="closeStats()">×</button>
+      </div>
+      <div class="stats-grid" id="stats-grid">
+        <div class="stat-item">
+          <div class="stat-value" id="stat-games">0</div>
+          <div class="stat-label">Games Played</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" id="stat-wins">0</div>
+          <div class="stat-label">Wins 🏆</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" id="stat-losses">0</div>
+          <div class="stat-label">Losses 💔</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" id="stat-winrate">0%</div>
+          <div class="stat-label">Win Rate</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" id="stat-highest">0</div>
+          <div class="stat-label">Highest Score</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" id="stat-streak">0</div>
+          <div class="stat-label">Best Streak 🔥</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
 
   <div id="popup-container"></div>
 
   <script>
-    const gameURL = "https://handcricket-game-g-in.onecompiler.app";
-
+    // API Configuration
+    const API_URL = 'http://localhost:3000/api';
+    
+    // Game State
+    let currentPlayer = null;
     let difficulty = 'easy';
     let themeClickCount = 0;
     let p_run = 0, c_run = 0;
     let playerChoice = '', gamePhase = 'toss', secondPhase = false;
     let prevMoves = [], sameChoiceCount = 0, lastPlayerInput = null;
+    let selectedNumber = null;
 
+    // DOM Elements
     const playerRunInput = document.getElementById('player-run');
     const playerScoreDisplay = document.getElementById('player-score');
     const computerScoreDisplay = document.getElementById('computer-score');
@@ -316,31 +978,226 @@
     const computerChoiceDisplay = document.getElementById('computer-choice-display');
     const messageBox = document.getElementById('message-box');
     const gameStatus = document.getElementById('game-status');
-    const shareBtn = document.getElementById('share-btn');
-    const screenshotBtn = document.getElementById('screenshot-btn');
     const container = document.getElementById('main-container');
 
-    document.addEventListener("keydown", function (e) {
-      if (e.key === "Enter") playRound();
-      if (e.key === "Shift") resetGame();
-    });
+    // Check for saved session
+    window.onload = function() {
+      const savedPlayer = localStorage.getItem('currentPlayer');
+      if (savedPlayer) {
+        currentPlayer = JSON.parse(savedPlayer);
+        showGameScreen();
+        updatePlayerDisplay();
+      }
+    };
 
+    // ============ LOGIN/REGISTER ============
+    async function handleLogin() {
+      const usernameInput = document.getElementById('username-input');
+      const errorDisplay = document.getElementById('login-error');
+      const username = usernameInput.value.trim();
+
+      if (!username || username.length < 2) {
+        showError('Please enter a name (at least 2 characters)');
+        return;
+      }
+
+      try {
+        // Check if username exists
+        const checkResponse = await fetch(`${API_URL}/check-username/${encodeURIComponent(username)}`);
+        const checkData = await checkResponse.json();
+
+        if (checkData.exists) {
+          // Login existing player
+          const loginResponse = await fetch(`${API_URL}/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username })
+          });
+          
+          if (loginResponse.ok) {
+            const data = await loginResponse.json();
+            currentPlayer = data.player;
+            localStorage.setItem('currentPlayer', JSON.stringify(currentPlayer));
+            showToast(`Welcome back, ${currentPlayer.username}! 🎉`);
+            showGameScreen();
+            updatePlayerDisplay();
+          }
+        } else {
+          // Register new player
+          const registerResponse = await fetch(`${API_URL}/register`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username })
+          });
+
+          if (registerResponse.ok) {
+            const data = await registerResponse.json();
+            currentPlayer = data.player;
+            localStorage.setItem('currentPlayer', JSON.stringify(currentPlayer));
+            showToast(`Welcome, ${currentPlayer.username}! Let's play! 🚀`);
+            showGameScreen();
+            updatePlayerDisplay();
+          } else {
+            const error = await registerResponse.json();
+            showError(error.error || 'Registration failed');
+          }
+        }
+      } catch (error) {
+        console.error('Login error:', error);
+        // Offline mode - create local player
+        currentPlayer = {
+          id: Date.now(),
+          username: username,
+          total_games: 0,
+          total_wins: 0,
+          total_losses: 0,
+          highest_score: 0,
+          max_win_streak: 0
+        };
+        localStorage.setItem('currentPlayer', JSON.stringify(currentPlayer));
+        showToast(`Playing offline as ${username} 🎮`);
+        showGameScreen();
+        updatePlayerDisplay();
+      }
+    }
+
+    function showError(message) {
+      const errorDisplay = document.getElementById('login-error');
+      errorDisplay.textContent = message;
+      errorDisplay.style.display = 'block';
+      setTimeout(() => errorDisplay.style.display = 'none', 3000);
+    }
+
+    function logout() {
+      localStorage.removeItem('currentPlayer');
+      currentPlayer = null;
+      document.getElementById('login-screen').style.display = 'block';
+      document.getElementById('game-screen').style.display = 'none';
+      document.getElementById('username-input').value = '';
+      resetGame();
+    }
+
+    function showGameScreen() {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('game-screen').style.display = 'block';
+    }
+
+    async function updatePlayerDisplay() {
+      if (!currentPlayer) return;
+      
+      document.getElementById('display-name').textContent = currentPlayer.username;
+      document.getElementById('player-avatar').textContent = currentPlayer.username.charAt(0).toUpperCase();
+      
+      try {
+        const rankResponse = await fetch(`${API_URL}/rank/${currentPlayer.id}`);
+        if (rankResponse.ok) {
+          const rankData = await rankResponse.json();
+          document.getElementById('display-rank').textContent = `Rank: #${rankData.rank} of ${rankData.totalPlayers}`;
+        }
+      } catch (error) {
+        document.getElementById('display-rank').textContent = 'Rank: #--';
+      }
+    }
+
+    // ============ LEADERBOARD ============
+    async function showLeaderboard() {
+      document.getElementById('leaderboard-modal').classList.add('active');
+      
+      try {
+        const response = await fetch(`${API_URL}/leaderboard`);
+        if (response.ok) {
+          const players = await response.json();
+          renderLeaderboard(players);
+        }
+      } catch (error) {
+        document.getElementById('leaderboard-list').innerHTML = 
+          '<li style="text-align: center; padding: 20px;">Unable to load leaderboard 😔</li>';
+      }
+    }
+
+    function renderLeaderboard(players) {
+      const list = document.getElementById('leaderboard-list');
+      
+      if (players.length === 0) {
+        list.innerHTML = '<li style="text-align: center; padding: 20px;">No players yet! Be the first! 🎮</li>';
+        return;
+      }
+      
+      list.innerHTML = players.map((player, index) => {
+        const rankClass = index === 0 ? 'gold' : index === 1 ? 'silver' : index === 2 ? 'bronze' : '';
+        const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `#${index + 1}`;
+        
+        return `
+          <li class="leaderboard-item ${rankClass}">
+            <div class="rank-badge ${rankClass}">${medal}</div>
+            <div class="player-details">
+              <div class="name">${player.username}</div>
+              <div class="stats">
+                <span class="wins">${player.total_wins}W</span> / 
+                ${player.total_losses}L | 
+                Best: ${player.highest_score} | 
+                ${player.win_rate}% WR
+              </div>
+            </div>
+          </li>
+        `;
+      }).join('');
+    }
+
+    function closeLeaderboard() {
+      document.getElementById('leaderboard-modal').classList.remove('active');
+    }
+
+    // ============ STATS ============
+    async function showStats() {
+      if (!currentPlayer) return;
+      
+      document.getElementById('stats-modal').classList.add('active');
+      
+      try {
+        const response = await fetch(`${API_URL}/player/${currentPlayer.id}`);
+        if (response.ok) {
+          const stats = await response.json();
+          document.getElementById('stat-games').textContent = stats.total_games || 0;
+          document.getElementById('stat-wins').textContent = stats.total_wins || 0;
+          document.getElementById('stat-losses').textContent = stats.total_losses || 0;
+          document.getElementById('stat-highest').textContent = stats.highest_score || 0;
+          document.getElementById('stat-streak').textContent = stats.max_win_streak || 0;
+          
+          const winRate = stats.total_games > 0 
+            ? Math.round((stats.total_wins / stats.total_games) * 100) 
+            : 0;
+          document.getElementById('stat-winrate').textContent = `${winRate}%`;
+        }
+      } catch (error) {
+        // Show local stats
+        document.getElementById('stat-games').textContent = currentPlayer.total_games || 0;
+        document.getElementById('stat-wins').textContent = currentPlayer.total_wins || 0;
+        document.getElementById('stat-losses').textContent = currentPlayer.total_losses || 0;
+        document.getElementById('stat-highest').textContent = currentPlayer.highest_score || 0;
+        document.getElementById('stat-streak').textContent = currentPlayer.max_win_streak || 0;
+      }
+    }
+
+    function closeStats() {
+      document.getElementById('stats-modal').classList.remove('active');
+    }
+
+    // ============ THEME ============
     function toggleTheme() {
       const body = document.body;
       themeClickCount++;
       
-      // Easter egg: Rainbow theme after 9 clicks
       if (themeClickCount === 9) {
         body.className = 'rainbow';
-        showPopup("🌈 Rainbow Theme Unlocked!");
+        showToast("🌈 Rainbow Theme Unlocked! ✨");
         return;
       }
       
       const themes = ['dark', 'light', 'purple'];
-      const currentTheme = body.className;
+      const currentTheme = body.className.split(' ')[0];
       let nextIndex = 0;
       
-      // Find current theme index
       for (let i = 0; i < themes.length; i++) {
         if (currentTheme === themes[i]) {
           nextIndex = (i + 1) % themes.length;
@@ -349,9 +1206,11 @@
       }
       
       body.className = themes[nextIndex];
-      showPopup(`Theme changed to ${themes[nextIndex].charAt(0).toUpperCase() + themes[nextIndex].slice(1)}`);
+      if (difficulty === 'nightmare') body.classList.add('nightmare-mode');
+      showToast(`Theme: ${themes[nextIndex].charAt(0).toUpperCase() + themes[nextIndex].slice(1)} 🎨`);
     }
 
+    // ============ DIFFICULTY ============
     function toggleDifficulty() {
       const box = document.getElementById("difficulty-box");
       box.style.display = (box.style.display === "block") ? "none" : "block";
@@ -360,64 +1219,144 @@
     function setDifficulty(level) {
       difficulty = level;
       document.getElementById("difficulty-box").style.display = "none";
-      ["easy", "medium", "hard"].forEach(id => {
-        document.getElementById(`${id}-btn`).classList.remove("selected");
+      
+      // Update button styles
+      ["easy", "medium", "hard", "nightmare"].forEach(id => {
+        const btn = document.getElementById(`${id}-btn`);
+        if (btn) btn.classList.remove("selected");
       });
       document.getElementById(`${level}-btn`).classList.add("selected");
-      // Show a message to confirm difficulty change
-      showPopup(`Difficulty set to ${level.charAt(0).toUpperCase() + level.slice(1)}`);
+      
+      // Show/hide nightmare warning
+      document.getElementById('nightmare-warning').style.display = 
+        level === 'nightmare' ? 'block' : 'none';
+      
+      // Apply nightmare mode styling
+      if (level === 'nightmare') {
+        document.body.classList.add('nightmare-mode');
+        showToast("💀 NIGHTMARE MODE ACTIVATED! Good luck... you'll need it! ☠️");
+      } else {
+        document.body.classList.remove('nightmare-mode');
+        const difficultyEmoji = level === 'easy' ? '😊' : level === 'medium' ? '😐' : '😈';
+        showToast(`Difficulty: ${level.charAt(0).toUpperCase() + level.slice(1)} ${difficultyEmoji}`);
+      }
     }
 
+    // ============ NUMBER SELECTION ============
+    function selectNumber(num) {
+      selectedNumber = num;
+      playerRunInput.value = num;
+      
+      // Update button styles
+      document.querySelectorAll('.number-btn').forEach(btn => btn.classList.remove('selected'));
+      event.target.classList.add('selected');
+    }
+
+    // ============ TOSS ============
     function toss(playerToss) {
-      const compToss = Math.random() < 0.5 ? 'head' : 'tails';
-      if (playerToss === compToss) {
-        messageBox.innerHTML = `You chose <strong>${playerToss}</strong>, Computer chose <strong>${compToss}</strong>.<br>You won the toss! Choose to Bat or Bowl.`;
-        document.getElementById('toss-section').style.display = 'none';
-        document.getElementById('choice-section').style.display = 'block';
-      } else {
-        const compRole = Math.random() < 0.5 ? 'batting' : 'bowling';
-        playerChoice = (compRole === 'batting') ? 'bowling' : 'batting';
-        gamePhase = playerChoice;
-        messageBox.innerHTML = `Computer won the toss and chose to ${compRole}. You are ${playerChoice}.`;
-        document.getElementById('toss-section').style.display = 'none';
-        setTimeout(startGame, 1500);
-      }
+      const coin = document.getElementById('coin');
+      coin.classList.add('flipping');
+      
+      // Play coin sound
+      const coinSound = document.getElementById('coinflip');
+      if (coinSound) coinSound.play().catch(() => {});
+      
+      setTimeout(() => {
+        coin.classList.remove('flipping');
+        
+        const compToss = Math.random() < 0.5 ? 'head' : 'tails';
+        const coinEmoji = compToss === 'head' ? '👑' : '🦅';
+        coin.querySelector('.coin-inner').textContent = coinEmoji;
+        
+        if (playerToss === compToss) {
+          messageBox.innerHTML = `🪙 You chose <strong>${playerToss}</strong>, Coin shows <strong>${compToss}</strong> ${coinEmoji}<br>🎉 You won the toss! Choose to Bat or Bowl.`;
+          document.getElementById('toss-section').style.display = 'none';
+          document.getElementById('choice-section').style.display = 'block';
+          showToast("🎉 You won the toss!");
+        } else {
+          const compRole = Math.random() < 0.5 ? 'batting' : 'bowling';
+          playerChoice = (compRole === 'batting') ? 'bowling' : 'batting';
+          gamePhase = playerChoice;
+          messageBox.innerHTML = `🪙 You chose <strong>${playerToss}</strong>, Coin shows <strong>${compToss}</strong> ${coinEmoji}<br>🤖 Computer won and chose to ${compRole}. You are ${playerChoice}!`;
+          document.getElementById('toss-section').style.display = 'none';
+          showToast(`You are ${playerChoice}! ${playerChoice === 'batting' ? '🏏' : '⚾'}`);
+          setTimeout(startGame, 1500);
+        }
+      }, 1000);
     }
 
     function setChoice(choice) {
       playerChoice = choice;
       gamePhase = choice;
       document.getElementById('choice-section').style.display = 'none';
+      showToast(`You chose ${choice}! ${choice === 'batting' ? '🏏' : '⚾'}`);
       startGame();
     }
 
     function startGame() {
       document.getElementById('game-section').style.display = 'block';
-      gameStatus.textContent = `You are ${playerChoice}${secondPhase ? " (2nd Innings)" : ""}`;
-      playerRunInput.focus();
+      const phaseEmoji = playerChoice === 'batting' ? '🏏' : '⚾';
+      const inningsText = secondPhase ? ' (2nd Innings)' : '';
+      gameStatus.innerHTML = `${phaseEmoji} You are <strong>${playerChoice.toUpperCase()}</strong>${inningsText}`;
     }
 
+    // ============ GAME LOGIC ============
     function generateComputerMove() {
-      if (difficulty === 'easy') return Math.floor(Math.random() * 11);
+      // NIGHTMARE MODE - Computer cheats to always win
+      if (difficulty === 'nightmare') {
+        const playerVal = parseInt(playerRunInput.value) || 0;
+        
+        if (gamePhase === 'batting') {
+          // When player is batting, computer tries to get them out
+          // 70% chance to match player's number (OUT!)
+          if (Math.random() < 0.7) {
+            return playerVal;
+          }
+          // Otherwise pick a number that minimizes player's score
+          return Math.floor(Math.random() * 3); // Low numbers
+        } else {
+          // When computer is batting, never match player's number
+          // Also pick high numbers to score more
+          let computerNum;
+          do {
+            computerNum = Math.floor(Math.random() * 4) + 7; // 7-10
+          } while (computerNum === playerVal);
+          return computerNum;
+        }
+      }
+      
+      // Normal difficulty modes
+      if (difficulty === 'easy') {
+        return Math.floor(Math.random() * 11);
+      }
+      
       if (difficulty === 'medium') {
-        const bias = Math.random() < 0.3 ? prevMoves[prevMoves.length - 1] || Math.floor(Math.random() * 11) : Math.floor(Math.random() * 11);
+        const bias = Math.random() < 0.3 
+          ? prevMoves[prevMoves.length - 1] || Math.floor(Math.random() * 11) 
+          : Math.floor(Math.random() * 11);
         return Math.max(0, Math.min(10, bias));
       }
+      
       if (difficulty === 'hard') {
+        // Predict based on player's most common choice
         const freq = {};
         prevMoves.forEach(n => freq[n] = (freq[n] || 0) + 1);
-        const sorted = Object.entries(freq).sort((a,b)=>b[1]-a[1]);
+        const sorted = Object.entries(freq).sort((a,b) => b[1] - a[1]);
         const predict = sorted.length ? parseInt(sorted[0][0]) : Math.floor(Math.random() * 11);
-        return Math.max(0, Math.min(10, predict + (Math.random() < 0.5 ? 0 : (Math.random() < 0.5 ? 1 : -1))));
+        const variation = Math.random() < 0.5 ? 0 : (Math.random() < 0.5 ? 1 : -1);
+        return Math.max(0, Math.min(10, predict + variation));
       }
+      
+      return Math.floor(Math.random() * 11);
     }
 
     function playRound() {
       const val = parseInt(playerRunInput.value);
+      
       if (isNaN(val) || val < 0 || val > 10) {
-        messageBox.innerText = "Enter a number between 0 and 10.";
-        playerRunInput.classList.add('shake');
-        setTimeout(() => playerRunInput.classList.remove('shake'), 500);
+        messageBox.innerHTML = "⚠️ Please select a number between 0 and 10!";
+        container.classList.add('shake');
+        setTimeout(() => container.classList.remove('shake'), 500);
         return;
       }
 
@@ -425,37 +1364,22 @@
       if (val === lastPlayerInput) {
         sameChoiceCount++;
         if (sameChoiceCount === 3) {
-          showPopup("⚠ Warning: Don't repeat the same number!");
-          playerRunInput.classList.add('shake');
-          setTimeout(() => playerRunInput.classList.remove('shake'), 500);
+          showToast("⚠️ Warning: Try different numbers!");
         }
         if (sameChoiceCount === 4) {
-          showPopup("😬 Be careful! Repeating again will get you OUT!");
-          playerRunInput.classList.add('shake');
-          setTimeout(() => playerRunInput.classList.remove('shake'), 500);
+          showToast("😬 One more repeat and you're OUT!");
         }
       } else {
         sameChoiceCount = 1;
         lastPlayerInput = val;
       }
 
-      // Check if player is out due to repeated inputs
+      // Auto-out for 5 same choices while batting
       if (sameChoiceCount >= 5 && gamePhase === 'batting') {
-        messageBox.innerHTML = "❌ You used the same number 5 times! You're out!";
+        messageBox.innerHTML = "❌ You used the same number 5 times! You're OUT!";
         playSound('lose');
         animateOut();
-        if (!secondPhase) {
-          secondPhase = true;
-          playerChoice = 'bowling';
-          gamePhase = 'bowling';
-          setTimeout(() => {
-            messageBox.innerText = "You are out! Now Bowling – Defend your score!";
-            startGame();
-          }, 1500);
-        } else {
-          endGame();
-        }
-        playerRunInput.value = '';
+        handleOut();
         return;
       }
 
@@ -463,100 +1387,160 @@
       const comp = generateComputerMove();
       const isOut = val === comp;
       prevMoves.push(val);
+      
+      // Animate choices
       playerChoiceDisplay.textContent = val;
+      playerChoiceDisplay.classList.add('pop');
       computerChoiceDisplay.textContent = comp;
+      computerChoiceDisplay.classList.add('pop');
+      setTimeout(() => {
+        playerChoiceDisplay.classList.remove('pop');
+        computerChoiceDisplay.classList.remove('pop');
+      }, 300);
 
-      // Game logic based on current phase
+      // Clear selection
+      selectedNumber = null;
+      playerRunInput.value = '';
+      document.querySelectorAll('.number-btn').forEach(btn => btn.classList.remove('selected'));
+
+      // Game logic
       if (gamePhase === 'batting') {
         if (isOut) {
+          messageBox.innerHTML = `💥 OUT! Both chose ${val}!`;
           playSound('lose');
           animateOut();
-          if (!secondPhase) {
-            secondPhase = true;
-            playerChoice = 'bowling';
-            gamePhase = 'bowling';
-            setTimeout(() => {
-              messageBox.innerText = "You are out! Now Bowling – Defend your score!";
-              startGame();
-            }, 1000);
-          } else {
-            endGame();
-          }
+          handleOut();
         } else {
-          // If player chooses 0, they get the computer's score
-          p_run += val === 0 ? comp : val;
+          const runs = val === 0 ? comp : val;
+          p_run += runs;
           updateScores();
+          
+          const runEmoji = runs >= 6 ? '🔥' : runs >= 4 ? '💪' : '👍';
+          messageBox.innerHTML = `${runEmoji} +${runs} runs! Keep going!`;
+          
           if (secondPhase && p_run > c_run) {
             win();
           }
         }
-      } else { // Bowling phase
+      } else {
         if (isOut) {
+          messageBox.innerHTML = `🎯 WICKET! Both chose ${val}! Computer is OUT!`;
           playSound('lose');
           animateOut();
-          if (!secondPhase) {
-            secondPhase = true;
-            playerChoice = 'batting';
-            gamePhase = 'batting';
-            setTimeout(() => {
-              messageBox.innerText = "Computer is out! Now Batting – Chase the score!";
-              startGame();
-            }, 1000);
-          } else {
-            endGame();
-          }
+          handleOut();
         } else {
           c_run += comp;
           updateScores();
+          
+          const dangerLevel = c_run > p_run ? '😰' : c_run === p_run ? '😐' : '😊';
+          messageBox.innerHTML = `${dangerLevel} Computer scored ${comp} runs. Total: ${c_run}`;
+          
           if (secondPhase && c_run > p_run) {
             lose();
           }
         }
       }
+    }
 
-      playerRunInput.value = '';
-      playerRunInput.focus();
+    function handleOut() {
+      if (!secondPhase) {
+        secondPhase = true;
+        playerChoice = gamePhase === 'batting' ? 'bowling' : 'batting';
+        gamePhase = playerChoice;
+        
+        setTimeout(() => {
+          if (playerChoice === 'bowling') {
+            messageBox.innerHTML = `🔄 First innings over! Your score: ${p_run}<br>⚾ Now BOWLING - Defend your score!`;
+          } else {
+            messageBox.innerHTML = `🔄 First innings over! Target: ${c_run + 1}<br>🏏 Now BATTING - Chase the score!`;
+          }
+          startGame();
+        }, 1500);
+      } else {
+        endGame();
+      }
     }
 
     function updateScores() {
       playerScoreDisplay.textContent = p_run;
       computerScoreDisplay.textContent = c_run;
       
-      // Add animation to score updates
-      playerScoreDisplay.classList.add('shake');
-      computerScoreDisplay.classList.add('shake');
+      playerScoreDisplay.classList.add('pulse');
+      computerScoreDisplay.classList.add('pulse');
       setTimeout(() => {
-        playerScoreDisplay.classList.remove('shake');
-        computerScoreDisplay.classList.remove('shake');
+        playerScoreDisplay.classList.remove('pulse');
+        computerScoreDisplay.classList.remove('pulse');
       }, 500);
     }
 
-    function endGame() {
-      let result = `🏁 Game Over!<br>Your Score: <strong>${p_run}</strong><br>Computer Score: <strong>${c_run}</strong><br>`;
+    async function endGame() {
+      let result = '';
+      let gameResult = '';
       
       if (p_run > c_run) {
-        result += "🎉 You win!";
+        result = `
+          <div style="font-size: 3rem; margin-bottom: 10px;">🎉🏆🎉</div>
+          <strong>YOU WIN!</strong><br>
+          Your Score: <strong>${p_run}</strong> | Computer: <strong>${c_run}</strong><br>
+          Victory by ${p_run - c_run} runs! 🎊
+        `;
+        gameResult = 'win';
         playSound('win');
-        container.classList.add('win-animation');
+        createConfetti();
       } else if (c_run > p_run) {
-        result += "💔 You lose!";
+        result = `
+          <div style="font-size: 3rem; margin-bottom: 10px;">😔💔😔</div>
+          <strong>YOU LOSE!</strong><br>
+          Your Score: <strong>${p_run}</strong> | Computer: <strong>${c_run}</strong><br>
+          ${difficulty === 'nightmare' ? 'Did you really expect to win Nightmare mode? 💀' : 'Better luck next time! 💪'}
+        `;
+        gameResult = 'loss';
         playSound('lose');
-        container.classList.add('lose-animation');
       } else {
-        result += "🤝 It's a tie!";
-        container.classList.add('tie-animation');
+        result = `
+          <div style="font-size: 3rem; margin-bottom: 10px;">🤝</div>
+          <strong>IT'S A TIE!</strong><br>
+          Both scored: <strong>${p_run}</strong> runs!<br>
+          What a match! 🎭
+        `;
+        gameResult = 'tie';
       }
       
       messageBox.innerHTML = result;
       document.getElementById('game-section').style.display = 'none';
       
-      // Show share button after game ends
-      shareBtn.style.display = "inline-block";
-      
-      // Remove animation classes after animation completes
-      setTimeout(() => {
-        container.classList.remove('win-animation', 'lose-animation', 'tie-animation');
-      }, 2000);
+      // Save game to database
+      if (currentPlayer) {
+        try {
+          await fetch(`${API_URL}/save-game`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              playerId: currentPlayer.id,
+              playerScore: p_run,
+              computerScore: c_run,
+              result: gameResult,
+              difficulty: difficulty
+            })
+          });
+          
+          // Refresh player stats
+          const response = await fetch(`${API_URL}/player/${currentPlayer.id}`);
+          if (response.ok) {
+            currentPlayer = await response.json();
+            localStorage.setItem('currentPlayer', JSON.stringify(currentPlayer));
+            updatePlayerDisplay();
+          }
+        } catch (error) {
+          console.error('Error saving game:', error);
+          // Update local stats
+          currentPlayer.total_games = (currentPlayer.total_games || 0) + 1;
+          if (gameResult === 'win') currentPlayer.total_wins = (currentPlayer.total_wins || 0) + 1;
+          if (gameResult === 'loss') currentPlayer.total_losses = (currentPlayer.total_losses || 0) + 1;
+          currentPlayer.highest_score = Math.max(currentPlayer.highest_score || 0, p_run);
+          localStorage.setItem('currentPlayer', JSON.stringify(currentPlayer));
+        }
+      }
     }
 
     function win() {
@@ -570,38 +1554,43 @@
     function playSound(type) {
       const soundElement = document.getElementById(type === 'win' ? 'clapssound' : 'losinghorn');
       if (soundElement) {
-        soundElement.play().catch(error => {
-          console.error(`Error playing ${type} sound:`, error);
-          // Fallback: show a visual notification if sound fails
-          showPopup(type === 'win' ? "🎉 You win!" : "💔 You lose!");
-        });
-      } else {
-        console.error(`Sound element for ${type} not found`);
-        showPopup(type === 'win' ? "🎉 You win!" : "💔 You lose!");
+        soundElement.currentTime = 0;
+        soundElement.play().catch(() => {});
       }
     }
 
     function resetGame() {
-      p_run = 0; c_run = 0; secondPhase = false;
-      gamePhase = 'toss'; prevMoves = [];
-      sameChoiceCount = 0; lastPlayerInput = null;
+      p_run = 0;
+      c_run = 0;
+      secondPhase = false;
+      gamePhase = 'toss';
+      prevMoves = [];
+      sameChoiceCount = 0;
+      lastPlayerInput = null;
+      selectedNumber = null;
+      
       updateScores();
       playerChoiceDisplay.textContent = "-";
       computerChoiceDisplay.textContent = "-";
-      messageBox.textContent = "Welcome! Choose HEAD or TAILS to start the toss.";
+      messageBox.innerHTML = "Welcome! 👋 Choose HEAD or TAILS to start the toss. 🪙";
       gameStatus.textContent = '';
+      
       document.getElementById('game-section').style.display = 'none';
       document.getElementById('toss-section').style.display = 'block';
       document.getElementById('choice-section').style.display = 'none';
-      shareBtn.style.display = "none";
+      document.getElementById('coin').querySelector('.coin-inner').textContent = '🪙';
+      
+      document.querySelectorAll('.number-btn').forEach(btn => btn.classList.remove('selected'));
+      playerRunInput.value = '';
     }
 
-    function showPopup(message) {
-      const popup = document.createElement("div");
-      popup.className = "rainbow-popup";
-      popup.innerText = message;
-      document.getElementById("popup-container").appendChild(popup);
-      setTimeout(() => popup.remove(), 6000);
+    // ============ EFFECTS ============
+    function showToast(message) {
+      const toast = document.createElement("div");
+      toast.className = "toast";
+      toast.innerText = message;
+      document.getElementById("toast-container").appendChild(toast);
+      setTimeout(() => toast.remove(), 5000);
     }
 
     function animateOut() {
@@ -609,187 +1598,112 @@
       setTimeout(() => container.classList.remove("shake"), 600);
     }
 
+    function createConfetti() {
+      const colors = ['#ff6b6b', '#feca57', '#48dbfb', '#ff9ff3', '#54a0ff', '#5f27cd', '#00d4ff', '#10b981'];
+      
+      for (let i = 0; i < 50; i++) {
+        const confetti = document.createElement('div');
+        confetti.className = 'confetti';
+        confetti.style.left = Math.random() * 100 + 'vw';
+        confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+        confetti.style.animationDelay = Math.random() * 0.5 + 's';
+        document.body.appendChild(confetti);
+        
+        setTimeout(() => confetti.remove(), 5000);
+      }
+    }
+
+    // ============ SCREENSHOT ============
     function captureAndShare() {
-      console.log("captureAndShare() called");
-      
-      // Disable button to prevent multiple clicks
+      const screenshotBtn = document.getElementById('screenshot-btn');
       screenshotBtn.disabled = true;
+      showToast("📸 Preparing screenshot...");
       
-      // Show loading message
-      const loadingMessage = showPopup("Preparing screenshot...");
-      
-      // Check if html2canvas is available
       if (typeof html2canvas === 'undefined') {
-        console.error("html2canvas is not loaded");
-        showPopup("Screenshot library not loaded. Please try again later.");
+        showToast("Screenshot library not loaded 😔");
         screenshotBtn.disabled = false;
         return;
       }
       
-      try {
-        // Use html2canvas to capture the container
-        html2canvas(document.getElementById('main-container'), {
-          useCORS: true,
-          allowTaint: true,
-          logging: false,
-          scale: 2, // Higher resolution
-          backgroundColor: null
-        })
-        .then(canvas => {
-          console.log("html2canvas succeeded");
-          
-          // Remove loading message
-          if (loadingMessage && loadingMessage.parentNode) {
-            loadingMessage.parentNode.removeChild(loadingMessage);
-          }
-          
-          // Create a preview of the screenshot
-          showScreenshotPreview(canvas);
-          
-          // Re-enable button
-          screenshotBtn.disabled = false;
-        })
-        .catch(error => {
-          console.error("html2canvas failed:", error);
-          
-          // Remove loading message
-          if (loadingMessage && loadingMessage.parentNode) {
-            loadingMessage.parentNode.removeChild(loadingMessage);
-          }
-          
-          // Show error message
-          showPopup("Screenshot failed. Please try again.");
-          
-          // Re-enable button
-          screenshotBtn.disabled = false;
-        });
-      } catch (error) {
-        console.error("Error in captureAndShare:", error);
-        
-        // Remove loading message
-        if (loadingMessage && loadingMessage.parentNode) {
-          loadingMessage.parentNode.removeChild(loadingMessage);
-        }
-        
-        // Show error message
-        showPopup("Screenshot failed. Please try again.");
-        
-        // Re-enable button
+      html2canvas(container, {
+        useCORS: true,
+        allowTaint: true,
+        scale: 2,
+        backgroundColor: '#0a0a1a'
+      })
+      .then(canvas => {
+        showScreenshotPreview(canvas);
         screenshotBtn.disabled = false;
-      }
+      })
+      .catch(error => {
+        console.error("Screenshot failed:", error);
+        showToast("Screenshot failed 😔");
+        screenshotBtn.disabled = false;
+      });
     }
 
     function showScreenshotPreview(canvas) {
-      // Create a preview modal
       const preview = document.createElement('div');
       preview.className = 'screenshot-preview';
       
-      // Create close button
-      const closeBtn = document.createElement('button');
-      closeBtn.className = 'close-btn';
-      closeBtn.innerHTML = '×';
-      closeBtn.onclick = function() {
-        document.body.removeChild(preview);
-      };
-      
-      // Create image element
       const img = document.createElement('img');
       img.src = canvas.toDataURL('image/png');
       
-      // Create download button
+      const buttonsDiv = document.createElement('div');
+      buttonsDiv.className = 'screenshot-buttons';
+      
       const downloadBtn = document.createElement('button');
-      downloadBtn.className = 'download-btn';
-      downloadBtn.innerHTML = 'Download Image';
+      downloadBtn.className = 'success';
+      downloadBtn.innerHTML = '💾 Download';
       downloadBtn.onclick = function() {
         const link = document.createElement('a');
-        link.download = 'cricket-game-result.png';
+        link.download = `cricket-game-${Date.now()}.png`;
         link.href = canvas.toDataURL('image/png');
         link.click();
       };
       
-      // Add elements to preview
-      preview.appendChild(closeBtn);
+      const shareBtn = document.createElement('button');
+      shareBtn.className = 'warning';
+      shareBtn.innerHTML = '📤 Share';
+      shareBtn.onclick = function() {
+        const text = `🏏 I scored ${p_run} runs against the computer's ${c_run} in Odd or Even Cricket! ${p_run > c_run ? '🏆 I WON!' : p_run < c_run ? '💔 Lost' : '🤝 Tie'}`;
+        const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;
+        window.open(whatsappUrl, '_blank');
+      };
+      
+      const closeBtn = document.createElement('button');
+      closeBtn.className = 'danger';
+      closeBtn.innerHTML = '✖ Close';
+      closeBtn.onclick = function() {
+        document.body.removeChild(preview);
+      };
+      
+      buttonsDiv.appendChild(downloadBtn);
+      buttonsDiv.appendChild(shareBtn);
+      buttonsDiv.appendChild(closeBtn);
+      
       preview.appendChild(img);
-      preview.appendChild(downloadBtn);
-      
-      // Add preview to body
+      preview.appendChild(buttonsDiv);
       document.body.appendChild(preview);
-      
-      // Try to share via WhatsApp if possible
-      shareImageWhatsApp(canvas.toDataURL('image/png'));
     }
 
-    function shareImageWhatsApp(imgData) {
-      try {
-        // If Web Share API is available, use it
-        if (navigator.share && navigator.canShare({ files: [] })) {
-          // Convert data URL to blob
-          fetch(imgData)
-            .then(res => res.blob())
-            .then(blob => {
-              const file = new File([blob], "cricket-game-result.png", { type: "image/png" });
-              
-              if (navigator.canShare({ files: [file] })) {
-                navigator.share({
-                  files: [file],
-                  title: 'Odd or Even Cricket Game Result',
-                  text: `Check out my score! I scored ${p_run} runs against the computer's ${c_run} runs.`,
-                })
-                .then(() => console.log('Shared successfully'))
-                .catch((error) => console.log('Error sharing', error));
-              } else {
-                // Fallback to WhatsApp web
-                shareViaWhatsAppWeb();
-              }
-            })
-            .catch(error => {
-              console.error('Error converting image:', error);
-              // Fallback to WhatsApp web
-              shareViaWhatsAppWeb();
-            });
-        } else {
-          // Fallback to WhatsApp web
-          shareViaWhatsAppWeb();
-        }
-      } catch (error) {
-        console.error('Error sharing:', error);
-        showPopup("Sharing failed. Please try again.");
+    // Keyboard shortcuts
+    document.addEventListener("keydown", function(e) {
+      if (e.key === "Enter") playRound();
+      if (e.key >= '0' && e.key <= '9') {
+        selectNumber(parseInt(e.key));
+        // Highlight the button
+        const buttons = document.querySelectorAll('.number-btn');
+        buttons.forEach(btn => btn.classList.remove('selected'));
+        if (buttons[parseInt(e.key)]) buttons[parseInt(e.key)].classList.add('selected');
       }
-    }
+    });
 
-    function shareViaWhatsAppWeb() {
-      const text = `Check out my score! I scored ${p_run} runs against the computer's ${c_run} runs in the Odd or Even Cricket Game.`;
-      const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;
-      
-      // Update the share button
-      shareBtn.href = whatsappUrl;
-      shareBtn.style.display = "inline-block";
-      
-      // Show message
-      showPopup("Click the WhatsApp button to share your score!");
-    }
-
-    // Initialize the game when the page loads
-    window.onload = function() {
-      // Set initial difficulty
-      setDifficulty('easy');
-      
-      // Focus on the input when it's visible
-      const observer = new MutationObserver(function(mutations) {
-        mutations.forEach(function(mutation) {
-          if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
-            const gameSection = document.getElementById('game-section');
-            if (gameSection.style.display !== 'none') {
-              playerRunInput.focus();
-            }
-          }
-        });
-      });
-      
-      observer.observe(document.getElementById('game-section'), {
-        attributes: true
-      });
-    };
+    // Handle Enter on username input
+    document.getElementById('username-input').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') handleLogin();
+    });
   </script>
 </body>
 </html>

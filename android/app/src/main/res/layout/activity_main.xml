@@ -1,0 +1,465 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_dark">
+
+    <LinearLayout
+        android:id="@+id/root"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Login Screen -->
+        <LinearLayout
+            android:id="@+id/login_screen"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/bg_container"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/login_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Odd or Even"
+                android:textColor="@color/text_light"
+                android:textSize="26sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Ultimate Cricket Game"
+                android:textColor="@color/text_dim"
+                android:textSize="14sp"
+                android:layout_marginTop="6dp" />
+
+            <EditText
+                android:id="@+id/username_input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/bg_input"
+                android:hint="Enter your name"
+                android:inputType="textPersonName"
+                android:maxLength="20"
+                android:padding="12dp"
+                android:textColor="@color/text_light"
+                android:textColorHint="@color/text_dim" />
+
+            <TextView
+                android:id="@+id/login_error"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/danger"
+                android:visibility="gone"
+                android:layout_marginTop="8dp" />
+
+            <Button
+                android:id="@+id/start_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:background="@drawable/bg_button_success"
+                android:text="Start Playing"
+                android:textAllCaps="false"
+                android:textColor="@color/text_light" />
+
+            <Button
+                android:id="@+id/login_leaderboard_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/bg_button_warning"
+                android:text="Leaderboard"
+                android:textAllCaps="false"
+                android:textColor="@color/text_light" />
+        </LinearLayout>
+
+        <!-- Game Screen -->
+        <LinearLayout
+            android:id="@+id/game_screen"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/bg_container"
+            android:padding="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/display_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Player"
+                        android:textColor="@color/text_light"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/display_rank"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Rank: #--"
+                        android:textColor="@color/accent"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/logout_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_button_danger"
+                    android:text="Logout"
+                    android:textAllCaps="false"
+                    android:textColor="@color/text_light" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="12dp">
+
+                <Button
+                    android:id="@+id/difficulty_toggle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_button"
+                    android:text="Difficulty"
+                    android:textAllCaps="false"
+                    android:textColor="@color/text_light" />
+
+                <Button
+                    android:id="@+id/leaderboard_button"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    android:background="@drawable/bg_button_warning"
+                    android:text="Ranks"
+                    android:textAllCaps="false"
+                    android:textColor="@color/text_light" />
+
+                <Button
+                    android:id="@+id/stats_button"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    android:background="@drawable/bg_button"
+                    android:text="Stats"
+                    android:textAllCaps="false"
+                    android:textColor="@color/text_light" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/message_box"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/bg_message"
+                android:padding="12dp"
+                android:text="Welcome! Choose HEAD or TAILS to start the toss."
+                android:textColor="@color/text_light" />
+
+            <LinearLayout
+                android:id="@+id/difficulty_box"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="12dp"
+                android:visibility="gone">
+
+                <Button
+                    android:id="@+id/easy_btn"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_button_success"
+                    android:text="Easy"
+                    android:textAllCaps="false"
+                    android:textColor="@color/text_light" />
+
+                <Button
+                    android:id="@+id/medium_btn"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="6dp"
+                    android:background="@drawable/bg_button_warning"
+                    android:text="Medium"
+                    android:textAllCaps="false"
+                    android:textColor="@color/text_light" />
+
+                <Button
+                    android:id="@+id/hard_btn"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="6dp"
+                    android:background="@drawable/bg_button_danger"
+                    android:text="Hard"
+                    android:textAllCaps="false"
+                    android:textColor="@color/text_light" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/game_status"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="Game On"
+                android:textColor="@color/text_light"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/target_display"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:visibility="gone"
+                android:text="Target: 0"
+                android:textColor="@color/accent"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:id="@+id/toss_section"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/head_btn"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_button_success"
+                    android:text="HEAD"
+                    android:textAllCaps="false"
+                    android:textColor="@color/text_light" />
+
+                <Button
+                    android:id="@+id/tails_btn"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    android:background="@drawable/bg_button_warning"
+                    android:text="TAILS"
+                    android:textAllCaps="false"
+                    android:textColor="@color/text_light" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/choice_section"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <Button
+                    android:id="@+id/batting_btn"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_button_success"
+                    android:text="Batting"
+                    android:textAllCaps="false"
+                    android:textColor="@color/text_light" />
+
+                <Button
+                    android:id="@+id/bowling_btn"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    android:background="@drawable/bg_button_warning"
+                    android:text="Bowling"
+                    android:textAllCaps="false"
+                    android:textColor="@color/text_light" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/game_section"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:id="@+id/input_mode_toggle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/btn_mode_buttons"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_button"
+                        android:text="Buttons"
+                        android:textAllCaps="false"
+                        android:textColor="@color/text_light" />
+
+                    <Button
+                        android:id="@+id/btn_mode_keyboard"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="8dp"
+                        android:background="@drawable/bg_button"
+                        android:text="Keyboard"
+                        android:textAllCaps="false"
+                        android:textColor="@color/text_light" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/keyboard_input_wrapper"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <EditText
+                        android:id="@+id/keyboard_input"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_input"
+                        android:hint="Type 0-10"
+                        android:inputType="number"
+                        android:maxLength="2"
+                        android:padding="12dp"
+                        android:textColor="@color/text_light"
+                        android:textColorHint="@color/text_dim" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="Tap Play to submit"
+                        android:textColor="@color/text_dim"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/button_input_wrapper"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:orientation="vertical">
+
+                    <GridLayout
+                        android:id="@+id/number_grid"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:columnCount="4"
+                        android:rowCount="3">
+
+                        <Button android:id="@+id/num_0" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1" android:text="0" />
+                        <Button android:id="@+id/num_1" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1" android:text="1" />
+                        <Button android:id="@+id/num_2" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1" android:text="2" />
+                        <Button android:id="@+id/num_3" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1" android:text="3" />
+                        <Button android:id="@+id/num_4" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1" android:text="4" />
+                        <Button android:id="@+id/num_5" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1" android:text="5" />
+                        <Button android:id="@+id/num_6" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1" android:text="6" />
+                        <Button android:id="@+id/num_7" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1" android:text="7" />
+                        <Button android:id="@+id/num_8" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1" android:text="8" />
+                        <Button android:id="@+id/num_9" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1" android:text="9" />
+                        <Button android:id="@+id/num_10" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_columnWeight="1" android:text="10" />
+                    </GridLayout>
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/play_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/bg_button_success"
+                    android:text="Play"
+                    android:textAllCaps="false"
+                    android:textColor="@color/text_light" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/player_choice_display"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="-"
+                        android:textColor="@color/text_light"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/computer_choice_display"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="-"
+                        android:textColor="@color/text_light"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/player_score"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="0"
+                        android:textColor="@color/primary"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/computer_score"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="0"
+                        android:textColor="@color/danger"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/new_game_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/bg_button_danger"
+                    android:text="New Game"
+                    android:textAllCaps="false"
+                    android:textColor="@color/text_light" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

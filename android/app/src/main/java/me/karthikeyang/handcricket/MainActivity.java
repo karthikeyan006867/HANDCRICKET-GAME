@@ -1,6 +1,10 @@
 package me.karthikeyang.handcricket;
 
 import android.app.AlertDialog;
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.media.ToneGenerator;
@@ -13,10 +17,14 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.GridLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.graphics.Typeface;
+
+import java.util.Random;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -40,7 +48,8 @@ public class MainActivity extends AppCompatActivity {
 
     private LinearLayout loginScreen;
     private LinearLayout gameScreen;
-    private LinearLayout root;
+    private FrameLayout root;
+    private FrameLayout effectLayer;
     private EditText usernameInput;
     private TextView loginError;
     private TextView loginTitle;
@@ -90,6 +99,7 @@ public class MainActivity extends AppCompatActivity {
         loginScreen = findViewById(R.id.login_screen);
         gameScreen = findViewById(R.id.game_screen);
         root = findViewById(R.id.root);
+        effectLayer = findViewById(R.id.effect_layer);
         usernameInput = findViewById(R.id.username_input);
         loginError = findViewById(R.id.login_error);
         loginTitle = findViewById(R.id.login_title);
@@ -509,6 +519,7 @@ public class MainActivity extends AppCompatActivity {
                 messageBox.setText("OUT! Both chose " + val);
                 playTone(ToneGenerator.TONE_PROP_NACK, 120);
                 vibrateOnce(120);
+                showFloatingText("OUT!", false);
                 handleOut();
             } else {
                 int runs = val == 0 ? comp : val;
@@ -517,6 +528,7 @@ public class MainActivity extends AppCompatActivity {
                 messageBox.setText("+" + runs + " runs");
                 playTone(runs >= 6 ? ToneGenerator.TONE_PROP_BEEP2 : ToneGenerator.TONE_PROP_BEEP, 80);
                 vibrateOnce(40);
+                showFloatingText("+" + runs, true);
                 if (engine.secondInnings && engine.playerScore > engine.computerScore) {
                     endGame();
                 }
@@ -526,12 +538,14 @@ public class MainActivity extends AppCompatActivity {
                 messageBox.setText("WICKET! Both chose " + val);
                 playTone(ToneGenerator.TONE_PROP_NACK, 120);
                 vibrateOnce(120);
+                showFloatingText("WICKET!", true);
                 handleOut();
             } else {
                 engine.computerScore += comp;
                 updateScores();
                 messageBox.setText("Computer scored " + comp + " runs");
                 playTone(ToneGenerator.TONE_PROP_BEEP, 60);
+                showFloatingText("-" + comp, false);
                 if (engine.secondInnings && engine.computerScore > engine.playerScore) {
                     endGame();
                 }
@@ -596,6 +610,83 @@ public class MainActivity extends AppCompatActivity {
         view.startAnimation(shake);
     }
 
+    private void showFloatingText(String text, boolean positive) {
+        if (effectLayer == null) return;
+        final TextView tv = new TextView(this);
+        tv.setText(text);
+        tv.setTextSize(20);
+        tv.setTypeface(Typeface.DEFAULT_BOLD);
+        tv.setTextColor(positive ? getResources().getColor(R.color.success) : getResources().getColor(R.color.danger));
+
+        FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.WRAP_CONTENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT
+        );
+        effectLayer.addView(tv, lp);
+
+        effectLayer.post(() -> {
+            tv.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+            int x = (effectLayer.getWidth() - tv.getMeasuredWidth()) / 2;
+            int y = effectLayer.getHeight() / 3;
+            tv.setX(x);
+            tv.setY(y);
+
+            AnimatorSet set = new AnimatorSet();
+            ObjectAnimator move = ObjectAnimator.ofFloat(tv, "translationY", 0f, -140f);
+            ObjectAnimator fade = ObjectAnimator.ofFloat(tv, "alpha", 1f, 0f);
+            set.playTogether(move, fade);
+            set.setDuration(900);
+            set.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    effectLayer.removeView(tv);
+                }
+            });
+            set.start();
+        });
+    }
+
+    private void showConfetti() {
+        if (effectLayer == null) return;
+        Random rng = new Random();
+        int[] colors = new int[]{
+                getResources().getColor(R.color.primary),
+                getResources().getColor(R.color.secondary),
+                getResources().getColor(R.color.accent),
+                getResources().getColor(R.color.success),
+                getResources().getColor(R.color.danger)
+        };
+
+        int count = 24;
+        for (int i = 0; i < count; i++) {
+            View piece = new View(this);
+            int size = 8 + rng.nextInt(10);
+            FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(size, size);
+            piece.setLayoutParams(lp);
+            piece.setBackgroundColor(colors[rng.nextInt(colors.length)]);
+            effectLayer.addView(piece);
+
+            int startX = rng.nextInt(Math.max(effectLayer.getWidth(), 1));
+            piece.setX(startX);
+            piece.setY(-20);
+
+            float endY = effectLayer.getHeight() + 200f;
+            ObjectAnimator fall = ObjectAnimator.ofFloat(piece, "translationY", 0f, endY);
+            ObjectAnimator spin = ObjectAnimator.ofFloat(piece, "rotation", 0f, 360f + rng.nextInt(360));
+            ObjectAnimator fade = ObjectAnimator.ofFloat(piece, "alpha", 1f, 0f);
+            AnimatorSet set = new AnimatorSet();
+            set.playTogether(fall, spin, fade);
+            set.setDuration(1200 + rng.nextInt(900));
+            set.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    effectLayer.removeView(piece);
+                }
+            });
+            set.start();
+        }
+    }
+
     private void endGame() {
         String result;
         if (engine.playerScore > engine.computerScore) {
@@ -603,15 +694,19 @@ public class MainActivity extends AppCompatActivity {
             messageBox.setText("YOU WIN! " + engine.playerScore + " - " + engine.computerScore);
             playTone(ToneGenerator.TONE_PROP_ACK, 200);
             vibrateOnce(160);
+            showConfetti();
+            showFloatingText("VICTORY!", true);
         } else if (engine.playerScore < engine.computerScore) {
             result = "loss";
             messageBox.setText("YOU LOSE! " + engine.playerScore + " - " + engine.computerScore);
             playTone(ToneGenerator.TONE_PROP_NACK, 200);
             vibrateOnce(160);
+            showFloatingText("TRY AGAIN", false);
         } else {
             result = "tie";
             messageBox.setText("TIE! " + engine.playerScore + " - " + engine.computerScore);
             playTone(ToneGenerator.TONE_PROP_BEEP, 140);
+            showFloatingText("TIE", true);
         }
 
         saveGameResult(result);

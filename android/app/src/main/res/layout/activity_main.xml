@@ -4,12 +4,17 @@
     android:layout_height="match_parent"
     android:background="@color/bg_dark">
 
-    <LinearLayout
+    <FrameLayout
         android:id="@+id/root"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:padding="16dp">
+
+        <LinearLayout
+            android:id="@+id/content_wrapper"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
         <!-- Login Screen -->
         <LinearLayout
@@ -513,5 +518,10 @@
                     android:textColor="@color/text_light" />
             </LinearLayout>
         </LinearLayout>
-    </LinearLayout>
+
+        <FrameLayout
+            android:id="@+id/effect_layer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </FrameLayout>
 </ScrollView>

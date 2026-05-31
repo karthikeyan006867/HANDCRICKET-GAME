@@ -1,0 +1,14 @@
+[
+  {
+    "id": 0,
+    "username": "GuestPlayer",
+    "total_games": 5,
+    "total_wins": 3,
+    "total_losses": 1,
+    "total_ties": 1,
+    "highest_score": 42,
+    "total_runs": 120,
+    "max_win_streak": 2,
+    "win_rate": 60.0
+  }
+]

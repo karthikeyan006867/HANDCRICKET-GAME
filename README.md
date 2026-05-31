@@ -42,11 +42,15 @@ A stunning, feature-rich Odd or Even Cricket Game with Neon database integration
 ```bash
 HANDCRICKET-GAME/
 ├── index.html          # Main game (all-in-one HTML)
-├── styles.css          # Additional styles (optional)
 ├── README.md           # Documentation
 ├── LICENSE             # MIT License
+├── vercel.json          # Vercel routing config
+├── package.json         # Root dependencies for Vercel API
+├── api/
+│   └── index.js         # Vercel serverless API entry
 └── backend/
     ├── server.js       # Express API server
+  ├── public_leaderboard.json # Public fallback leaderboard
     ├── package.json    # Node.js dependencies
     └── .env            # Database configuration
 ```
@@ -59,9 +63,8 @@ git clone https://github.com/yourusername/HANDCRICKET-GAME.git
 cd HANDCRICKET-GAME
 ```
 
-### 2. Install Backend Dependencies
+### 2. Install Dependencies
 ```bash
-cd backend
 npm install
 ```
 
@@ -75,15 +78,20 @@ PORT=3000
 ### 4. Start the Server
 ```bash
 npm start
-# or for development
-npm run dev
 ```
 
 ### 5. Open the Game
-Open `index.html` in your browser or serve it:
-```bash
-npx serve ..
-```
+Open `http://localhost:3000` in your browser.
+
+## ☁️ Deploy to Vercel + Neon
+
+1. **Push to GitHub** and import the repo into Vercel.
+2. **Framework Preset:** Other.
+3. **Environment Variables** in Vercel:
+  - `DATABASE_URL` = your Neon pooled connection string (keep it secret)
+4. **Deploy** — Vercel will serve `index.html` and run the API at `/api/*`.
+
+If the database is unavailable, the app falls back to `backend/public_leaderboard.json` so the leaderboard remains public.
 
 ## 🎮 How to Play
 

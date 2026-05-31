@@ -1,22 +1,23 @@
 const express = require('express');
 const { Pool } = require('pg');
 const cors = require('cors');
+const fs = require('fs');
+const path = require('path');
 require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Neon PostgreSQL connection
+// Neon PostgreSQL connection (prefer DATABASE_URL, fallback to POSTGRES_URL)
+const connectionString = process.env.DATABASE_URL || process.env.POSTGRES_URL;
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false
-  }
+  connectionString,
+  ssl: connectionString ? { rejectUnauthorized: false } : undefined
 });
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static('../'));
+app.use(express.static(path.join(__dirname, '..')));
 
 // Initialize database tables
 async function initDB() {
@@ -55,6 +56,19 @@ async function initDB() {
     console.error('❌ Error initializing database:', error);
   }
 }
+
+// Initialize DB once (idempotent on cold start)
+const initPromise = initDB();
+
+// Ensure DB init completes before handling requests
+app.use(async (req, res, next) => {
+  try {
+    await initPromise;
+  } catch (error) {
+    console.error('DB init failed:', error);
+  }
+  next();
+});
 
 // Check if username exists
 app.get('/api/check-username/:username', async (req, res) => {
@@ -230,6 +244,7 @@ app.get('/api/player/:id', async (req, res) => {
 
 // Get leaderboard (rankings)
 app.get('/api/leaderboard', async (req, res) => {
+  // Try database first; if DB unavailable, fall back to public JSON so leaderboard remains public
   try {
     const result = await pool.query(`
       SELECT 
@@ -248,11 +263,24 @@ app.get('/api/leaderboard', async (req, res) => {
       ORDER BY total_wins DESC, win_rate DESC, highest_score DESC
       LIMIT 50
     `);
-    
-    res.json(result.rows);
+    return res.json(result.rows);
   } catch (error) {
-    console.error('Error getting leaderboard:', error);
-    res.status(500).json({ error: 'Server error' });
+    console.warn('DB leaderboard unavailable, falling back to public JSON:', error && error.message);
+  }
+
+  // Fallback: serve a public JSON file bundled with the backend
+  try {
+    const filePath = path.join(__dirname, 'public_leaderboard.json');
+    if (fs.existsSync(filePath)) {
+      const raw = fs.readFileSync(filePath, 'utf8');
+      const data = JSON.parse(raw || '[]');
+      return res.json(data);
+    } else {
+      return res.json([]);
+    }
+  } catch (err) {
+    console.error('Error reading fallback leaderboard file:', err);
+    return res.status(500).json({ error: 'Server error' });
   }
 });
 
@@ -311,10 +339,14 @@ app.get('/api/health', async (req, res) => {
   }
 });
 
-// Initialize DB and start server
-initDB().then(() => {
-  app.listen(PORT, () => {
-    console.log(`🚀 Server running on http://localhost:${PORT}`);
-    console.log('📊 Database connected to Neon PostgreSQL');
+// Start server only when run directly (local dev)
+if (require.main === module) {
+  initPromise.then(() => {
+    app.listen(PORT, () => {
+      console.log(`🚀 Server running on http://localhost:${PORT}`);
+      console.log('📊 Database connected to Neon PostgreSQL');
+    });
   });
-});
+}
+
+module.exports = app;

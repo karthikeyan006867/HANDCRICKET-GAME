@@ -311,6 +311,11 @@
       transform: translateY(0);
     }
 
+    button:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
     button.danger {
       background: linear-gradient(135deg, var(--danger), #dc2626);
     }
@@ -861,6 +866,13 @@
       animation: glow 1s ease infinite;
     }
 
+    .input-hint {
+      text-align: center;
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.6);
+      margin-top: 8px;
+    }
+
     .keyboard-input::placeholder {
       color: rgba(255,255,255,0.3);
       letter-spacing: 0;
@@ -1202,6 +1214,15 @@
       10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
       20%, 40%, 60%, 80% { transform: translateX(5px); }
     }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
   </style>
   <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 </head>
@@ -1248,7 +1269,7 @@
 
       <h2>🏏 Odd or Even Cricket 🏏</h2>
 
-      <div id="message-box">Welcome! 👋 Choose HEAD or TAILS to start the toss. 🪙</div>
+      <div id="message-box" role="status" aria-live="polite">Welcome! 👋 Choose HEAD or TAILS to start the toss. 🪙</div>
 
       <div class="difficulty-box" id="difficulty-box">
         <p>🎮 Select Difficulty Level:</p>
@@ -1281,7 +1302,7 @@
       </div>
 
       <div id="game-section" style="display:none;">
-        <div id="game-status">🏏 Game On!</div>
+        <div id="game-status" role="status" aria-live="polite">🏏 Game On!</div>
         
         <!-- Difficulty Badge -->
         <div id="difficulty-badge" class="difficulty-badge">
@@ -1323,6 +1344,7 @@
           <input type="number" id="keyboard-input" class="keyboard-input" 
                  min="0" max="10" placeholder="Type 0-10..." 
                  oninput="validateKeyboardInput(this)">
+          <div class="input-hint">Press Enter to play the round</div>
           <button onclick="playRound()" class="success" style="width: 100%; margin-top: 10px;">▶️ Play Round!</button>
         </div>
 
@@ -1430,8 +1452,10 @@
   <div id="popup-container"></div>
 
   <script>
-    // API Configuration
-    const API_URL = 'http://localhost:3000/api';
+    // API Configuration — same-origin for deploys, localhost fallback for dev/file usage
+    const API_URL = (location.hostname === 'localhost' || location.protocol === 'file:')
+      ? 'http://localhost:3000/api'
+      : `${location.origin}/api`;
     
     // Game State
     let currentPlayer = null;
@@ -1454,6 +1478,14 @@
     const messageBox = document.getElementById('message-box');
     const gameStatus = document.getElementById('game-status');
     const container = document.getElementById('main-container');
+
+    // Utility: enable/disable interactive controls to prevent double actions
+    function setControlsEnabled(enabled) {
+      const buttons = document.querySelectorAll('#toss-section button, #choice-section button, #game-section button');
+      buttons.forEach(b => b.disabled = !enabled);
+      const keyboard = document.getElementById('keyboard-input');
+      if (keyboard) keyboard.disabled = !enabled;
+    }
 
     // Check for saved session
     window.onload = function() {
@@ -1489,6 +1521,17 @@
         buttonWrapper.classList.toggle('hidden', savedInputMode === 'keyboard');
         keyboardWrapper.classList.toggle('active', savedInputMode === 'keyboard');
       }
+
+      // Improve accessibility/usability: label number buttons and key controls
+      document.querySelectorAll('.number-btn').forEach((b, i) => {
+        b.setAttribute('title', `Choose ${b.textContent.trim()}`);
+        b.setAttribute('aria-label', `Choose ${b.textContent.trim()}`);
+      });
+      const playBtn = Array.from(document.querySelectorAll('button')).find(x => x.textContent.includes('Play') || x.textContent.includes('Play!') || x.textContent.includes('Play Round'));
+      if (playBtn) playBtn.setAttribute('aria-label', 'Play round');
+      const tossBtns = document.querySelectorAll('#toss-section button');
+      tossBtns.forEach(b => b.setAttribute('aria-label', b.textContent.trim()));
+      setControlsEnabled(true);
     };
 
     // ============ LOGIN/REGISTER ============
@@ -1822,12 +1865,14 @@
 
     // ============ TOSS ============
     function toss(playerToss) {
+      // prevent repeated tosses
+      setControlsEnabled(false);
       const coin = document.getElementById('coin');
       coin.classList.add('flipping');
-      
+
       playSound('coin');
       vibrate([50, 30, 50, 30, 50]);
-      
+
       setTimeout(() => {
         coin.classList.remove('flipping');
         
@@ -1842,6 +1887,8 @@
           showToast("🎉 You won the toss!");
           playSound('wicket');
           vibrate([100, 50, 100]);
+          // re-enable controls so player can choose Bat/Bowl
+          setControlsEnabled(true);
         } else {
           const compRole = Math.random() < 0.5 ? 'batting' : 'bowling';
           playerChoice = (compRole === 'batting') ? 'bowling' : 'batting';
@@ -1851,7 +1898,7 @@
           showToast(`You are ${playerChoice}! ${playerChoice === 'batting' ? '🏏' : '⚾'}`);
           playSound('out');
           vibrate([50, 50, 50]);
-          setTimeout(startGame, 1500);
+          setTimeout(() => { setControlsEnabled(true); startGame(); }, 1500);
         }
       }, 1000);
     }
@@ -1887,59 +1934,75 @@
       if (inputMode === 'keyboard') {
         document.getElementById('keyboard-input').focus();
       }
+      // Ensure controls are enabled when a new innings/game starts
+      setControlsEnabled(true);
     }
 
     // ============ GAME LOGIC ============
     function generateComputerMove() {
-      // NIGHTMARE MODE - Computer cheats to always win
+      const playerVal = parseInt(playerRunInput.value) || 0;
+
+      // NIGHTMARE MODE - Computer aggressively cheats
       if (difficulty === 'nightmare') {
-        const playerVal = parseInt(playerRunInput.value) || 0;
-        
         if (gamePhase === 'batting') {
-          // When player is batting, computer tries to get them out
-          // 70% chance to match player's number (OUT!)
-          if (Math.random() < 0.7) {
-            return playerVal;
-          }
-          // Otherwise pick a number that minimizes player's score
-          return Math.floor(Math.random() * 3); // Low numbers
+          if (Math.random() < 0.85) return playerVal; // match most of the time
+          return Math.floor(Math.random() * 3); // otherwise, low-number kill
         } else {
-          // When computer is batting, never match player's number
-          // Also pick high numbers to score more
+          // Computer batting: pick high scoring numbers and avoid ties
           let computerNum;
+          let attempts = 0;
           do {
-            computerNum = Math.floor(Math.random() * 4) + 7; // 7-10
-          } while (computerNum === playerVal);
+            computerNum = 7 + Math.floor(Math.random() * 4); // 7-10
+            attempts++;
+          } while (computerNum === playerVal && attempts < 5);
           return computerNum;
         }
       }
-      
-      // Normal difficulty modes
+
+      // EASY: more forgiving - biased to low numbers and occasional predictable mistakes
       if (difficulty === 'easy') {
+        if (Math.random() < 0.15) return playerVal; // small chance to match
+        // bias toward lower runs so player can score
+        const distribution = [0,0,1,1,2,2,3,4,5,6,7];
+        return distribution[Math.floor(Math.random() * distribution.length)];
+      }
+
+      // MEDIUM: some short-term prediction using last move and occasional randomness
+      if (difficulty === 'medium') {
+        const last = prevMoves[prevMoves.length - 1];
+        if (last !== undefined && Math.random() < 0.45) {
+          // small chance to copy player's last tendency
+          return Math.max(0, Math.min(10, last + (Math.random() < 0.5 ? 0 : (Math.random() < 0.5 ? 1 : -1))));
+        }
         return Math.floor(Math.random() * 11);
       }
-      
-      if (difficulty === 'medium') {
-        const bias = Math.random() < 0.3 
-          ? prevMoves[prevMoves.length - 1] || Math.floor(Math.random() * 11) 
-          : Math.floor(Math.random() * 11);
-        return Math.max(0, Math.min(10, bias));
-      }
-      
+
+      // HARD: statistical prediction + counter strategy
       if (difficulty === 'hard') {
-        // Predict based on player's most common choice
         const freq = {};
         prevMoves.forEach(n => freq[n] = (freq[n] || 0) + 1);
         const sorted = Object.entries(freq).sort((a,b) => b[1] - a[1]);
         const predict = sorted.length ? parseInt(sorted[0][0]) : Math.floor(Math.random() * 11);
-        const variation = Math.random() < 0.5 ? 0 : (Math.random() < 0.5 ? 1 : -1);
-        return Math.max(0, Math.min(10, predict + variation));
+
+        // If player is batting, aim to match predicted number sometimes to try for wicket
+        if (gamePhase === 'batting') {
+          if (Math.random() < 0.6) return predict;
+          return Math.max(0, Math.min(10, predict + (Math.random() < 0.5 ? -1 : 1)));
+        } else {
+          // When computer batting, avoid predicted player number and push for higher runs
+          let candidate = predict + (Math.random() < 0.7 ? 2 : 1);
+          candidate = Math.max(0, Math.min(10, candidate));
+          if (candidate === playerVal) candidate = Math.max(0, candidate - 1);
+          return candidate;
+        }
       }
-      
+
       return Math.floor(Math.random() * 11);
     }
 
     function playRound() {
+      // Prevent double inputs while resolving round
+      setControlsEnabled(false);
       // Get value from either button mode or keyboard mode
       let val;
       if (inputMode === 'keyboard') {
@@ -2023,9 +2086,11 @@
             playSound('six');
             showToast("🔥 SIX! What a shot!");
             createSparkle(window.innerWidth / 2, window.innerHeight / 2);
+            createParticleBurst(window.innerWidth / 2, window.innerHeight / 2, 18);
           } else if (runs >= 4) {
             playSound('four');
             showToast("💪 FOUR! Great hit!");
+            createParticleBurst(window.innerWidth / 2, window.innerHeight / 2, 10);
           } else {
             playSound('run');
           }
@@ -2062,6 +2127,9 @@
           }
         }
       }
+
+      // small delay to allow animations/sounds to play before re-enabling controls
+      setTimeout(() => setControlsEnabled(true), 700);
     }
 
     function handleOut() {
@@ -2084,15 +2152,15 @@
     }
 
     function updateScores() {
-      playerScoreDisplay.textContent = p_run;
-      computerScoreDisplay.textContent = c_run;
-      
+      // Smoothly animate score change for better feedback
+      animateNumber(playerScoreDisplay, parseInt(playerScoreDisplay.textContent || '0'), p_run);
+      animateNumber(computerScoreDisplay, parseInt(computerScoreDisplay.textContent || '0'), c_run);
       playerScoreDisplay.classList.add('pulse');
       computerScoreDisplay.classList.add('pulse');
       setTimeout(() => {
         playerScoreDisplay.classList.remove('pulse');
         computerScoreDisplay.classList.remove('pulse');
-      }, 500);
+      }, 600);
     }
 
     async function endGame() {
@@ -2308,6 +2376,37 @@
         document.body.appendChild(sparkle);
         setTimeout(() => sparkle.remove(), 600);
       }
+    }
+
+    // Particle burst for stronger visual feedback
+    function createParticleBurst(x, y, count = 12) {
+      const colors = ['#ff6b6b', '#feca57', '#48dbfb', '#ff9ff3', '#54a0ff', '#5f27cd', '#00d4ff', '#10b981'];
+      for (let i = 0; i < count; i++) {
+        const part = document.createElement('div');
+        part.className = 'confetti';
+        part.style.left = x + (Math.random() * 120 - 60) + 'px';
+        part.style.top = y + (Math.random() * 40 - 20) + 'px';
+        part.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        part.style.width = (6 + Math.random() * 8) + 'px';
+        part.style.height = part.style.width;
+        part.style.borderRadius = (Math.random() < 0.5 ? '2px' : '50%');
+        part.style.animationDuration = (1.2 + Math.random() * 1.4) + 's';
+        document.body.appendChild(part);
+        setTimeout(() => part.remove(), 2200);
+      }
+    }
+
+    // Smooth number tween for score updates
+    function animateNumber(el, from, to, duration = 550) {
+      const start = performance.now();
+      function step(ts) {
+        const progress = Math.min((ts - start) / duration, 1);
+        const value = Math.floor(from + (to - from) * progress);
+        el.textContent = value;
+        if (progress < 1) requestAnimationFrame(step);
+        else el.textContent = to;
+      }
+      requestAnimationFrame(step);
     }
 
     // ============ FLOATING SCORE ============

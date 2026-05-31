@@ -1,8 +1,16 @@
 package me.karthikeyang.handcricket;
 
 import android.app.AlertDialog;
+import android.content.SharedPreferences;
+import android.media.AudioManager;
+import android.media.ToneGenerator;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridLayout;
@@ -23,14 +31,20 @@ public class MainActivity extends AppCompatActivity {
     private static final String PREFS = "handcricket_prefs";
     private static final String KEY_PLAYER = "current_player";
     private static final String KEY_INPUT_MODE = "input_mode";
+    private static final String KEY_THEME = "theme";
+    private static final String KEY_SOUND = "sound_enabled";
+    private static final String KEY_VIBRATION = "vibration_enabled";
 
     private final GameEngine engine = new GameEngine();
     private ApiClient api;
 
     private LinearLayout loginScreen;
     private LinearLayout gameScreen;
+    private LinearLayout root;
     private EditText usernameInput;
     private TextView loginError;
+    private TextView loginTitle;
+    private TextView loginSubtitle;
     private TextView displayName;
     private TextView displayRank;
     private TextView messageBox;
@@ -51,10 +65,18 @@ public class MainActivity extends AppCompatActivity {
     private EditText keyboardInput;
     private Button btnModeButtons;
     private Button btnModeKeyboard;
+    private Button themeToggle;
+    private Button soundToggle;
+    private Button vibrationToggle;
 
     private int selectedNumber = -1;
     private JSONObject currentPlayer;
     private boolean keyboardMode = false;
+    private String currentTheme = "dark";
+    private boolean soundEnabled = true;
+    private boolean vibrationEnabled = true;
+    private ToneGenerator toneGenerator;
+    private Vibrator vibrator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,11 +84,16 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         api = new ApiClient(API_BASE_URL);
+        vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
+        toneGenerator = new ToneGenerator(AudioManager.STREAM_MUSIC, 70);
 
         loginScreen = findViewById(R.id.login_screen);
         gameScreen = findViewById(R.id.game_screen);
+        root = findViewById(R.id.root);
         usernameInput = findViewById(R.id.username_input);
         loginError = findViewById(R.id.login_error);
+        loginTitle = findViewById(R.id.login_title);
+        loginSubtitle = findViewById(R.id.login_subtitle);
         displayName = findViewById(R.id.display_name);
         displayRank = findViewById(R.id.display_rank);
         messageBox = findViewById(R.id.message_box);
@@ -87,6 +114,9 @@ public class MainActivity extends AppCompatActivity {
         keyboardInput = findViewById(R.id.keyboard_input);
         btnModeButtons = findViewById(R.id.btn_mode_buttons);
         btnModeKeyboard = findViewById(R.id.btn_mode_keyboard);
+        themeToggle = findViewById(R.id.theme_toggle);
+        soundToggle = findViewById(R.id.sound_toggle);
+        vibrationToggle = findViewById(R.id.vibration_toggle);
 
         Button startBtn = findViewById(R.id.start_button);
         Button loginLeaderboard = findViewById(R.id.login_leaderboard_button);
@@ -107,6 +137,9 @@ public class MainActivity extends AppCompatActivity {
         difficultyToggle.setOnClickListener(v -> toggleDifficulty());
         leaderboardBtn.setOnClickListener(v -> showLeaderboard());
         statsBtn.setOnClickListener(v -> showStats());
+        themeToggle.setOnClickListener(v -> cycleTheme());
+        soundToggle.setOnClickListener(v -> toggleSound());
+        vibrationToggle.setOnClickListener(v -> toggleVibration());
 
         headBtn.setOnClickListener(v -> toss("head"));
         tailsBtn.setOnClickListener(v -> toss("tails"));
@@ -119,6 +152,7 @@ public class MainActivity extends AppCompatActivity {
 
         setupNumberButtons();
         restoreInputMode();
+        restoreSettings();
         restoreSession();
     }
 
@@ -134,7 +168,97 @@ public class MainActivity extends AppCompatActivity {
                 selectedNumber = val;
                 playerChoiceDisplay.setText(String.valueOf(val));
                 Toast.makeText(this, "Selected " + val, Toast.LENGTH_SHORT).show();
+                playTone(ToneGenerator.TONE_PROP_BEEP, 60);
+                vibrateOnce(30);
             });
+        }
+    }
+
+    private void restoreSettings() {
+        SharedPreferences prefs = getSharedPreferences(PREFS, MODE_PRIVATE);
+        currentTheme = prefs.getString(KEY_THEME, "dark");
+        soundEnabled = prefs.getBoolean(KEY_SOUND, true);
+        vibrationEnabled = prefs.getBoolean(KEY_VIBRATION, true);
+        applyTheme();
+        updateToggleLabels();
+    }
+
+    private void cycleTheme() {
+        String[] themes = new String[]{"dark", "light", "purple", "rainbow"};
+        int index = 0;
+        for (int i = 0; i < themes.length; i++) {
+            if (themes[i].equals(currentTheme)) {
+                index = (i + 1) % themes.length;
+                break;
+            }
+        }
+        currentTheme = themes[index];
+        getSharedPreferences(PREFS, MODE_PRIVATE).edit().putString(KEY_THEME, currentTheme).apply();
+        applyTheme();
+    }
+
+    private void applyTheme() {
+        int textPrimary = getResources().getColor(R.color.text_light);
+        int textDim = getResources().getColor(R.color.text_dim);
+
+        if ("light".equals(currentTheme)) {
+            root.setBackgroundColor(getResources().getColor(R.color.bg_light));
+            loginScreen.setBackgroundResource(R.drawable.bg_container_light);
+            gameScreen.setBackgroundResource(R.drawable.bg_container_light);
+            textPrimary = getResources().getColor(R.color.text_dark);
+            textDim = getResources().getColor(R.color.text_dim_dark);
+        } else if ("purple".equals(currentTheme)) {
+            root.setBackgroundColor(getResources().getColor(R.color.bg_purple));
+            loginScreen.setBackgroundResource(R.drawable.bg_container_purple);
+            gameScreen.setBackgroundResource(R.drawable.bg_container_purple);
+        } else if ("rainbow".equals(currentTheme)) {
+            root.setBackgroundResource(R.drawable.bg_root_rainbow);
+            loginScreen.setBackgroundResource(R.drawable.bg_container);
+            gameScreen.setBackgroundResource(R.drawable.bg_container);
+        } else {
+            root.setBackgroundColor(getResources().getColor(R.color.bg_dark));
+            loginScreen.setBackgroundResource(R.drawable.bg_container);
+            gameScreen.setBackgroundResource(R.drawable.bg_container);
+        }
+
+        loginTitle.setTextColor(textPrimary);
+        loginSubtitle.setTextColor(textDim);
+        messageBox.setTextColor(textPrimary);
+        gameStatus.setTextColor(textPrimary);
+        targetDisplay.setTextColor(getResources().getColor(R.color.accent));
+        displayName.setTextColor(textPrimary);
+    }
+
+    private void toggleSound() {
+        soundEnabled = !soundEnabled;
+        getSharedPreferences(PREFS, MODE_PRIVATE).edit().putBoolean(KEY_SOUND, soundEnabled).apply();
+        updateToggleLabels();
+    }
+
+    private void toggleVibration() {
+        vibrationEnabled = !vibrationEnabled;
+        getSharedPreferences(PREFS, MODE_PRIVATE).edit().putBoolean(KEY_VIBRATION, vibrationEnabled).apply();
+        updateToggleLabels();
+        if (vibrationEnabled) vibrateOnce(60);
+    }
+
+    private void updateToggleLabels() {
+        soundToggle.setText(soundEnabled ? "Sound On" : "Sound Off");
+        vibrationToggle.setText(vibrationEnabled ? "Vibrate On" : "Vibrate Off");
+        themeToggle.setText("Theme: " + currentTheme);
+    }
+
+    private void playTone(int tone, int durationMs) {
+        if (!soundEnabled || toneGenerator == null) return;
+        toneGenerator.startTone(tone, durationMs);
+    }
+
+    private void vibrateOnce(int ms) {
+        if (!vibrationEnabled || vibrator == null) return;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            vibrator.vibrate(VibrationEffect.createOneShot(ms, VibrationEffect.DEFAULT_AMPLITUDE));
+        } else {
+            vibrator.vibrate(ms);
         }
     }
 
@@ -323,12 +447,17 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.easy_btn).setOnClickListener(v -> setDifficulty(GameEngine.Difficulty.EASY));
         findViewById(R.id.medium_btn).setOnClickListener(v -> setDifficulty(GameEngine.Difficulty.MEDIUM));
         findViewById(R.id.hard_btn).setOnClickListener(v -> setDifficulty(GameEngine.Difficulty.HARD));
+        findViewById(R.id.nightmare_btn).setOnClickListener(v -> setDifficulty(GameEngine.Difficulty.NIGHTMARE));
     }
 
     private void setDifficulty(GameEngine.Difficulty difficulty) {
         engine.difficulty = difficulty;
         difficultyBox.setVisibility(View.GONE);
-        Toast.makeText(this, "Difficulty: " + difficulty.name(), Toast.LENGTH_SHORT).show();
+        if (difficulty == GameEngine.Difficulty.NIGHTMARE) {
+            Toast.makeText(this, "Nightmare mode: expect the impossible", Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(this, "Difficulty: " + difficulty.name(), Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void toss(String playerToss) {
@@ -378,12 +507,16 @@ public class MainActivity extends AppCompatActivity {
         if (engine.phase == GameEngine.Phase.BATTING) {
             if (isOut) {
                 messageBox.setText("OUT! Both chose " + val);
+                playTone(ToneGenerator.TONE_PROP_NACK, 120);
+                vibrateOnce(120);
                 handleOut();
             } else {
                 int runs = val == 0 ? comp : val;
                 engine.playerScore += runs;
                 updateScores();
                 messageBox.setText("+" + runs + " runs");
+                playTone(runs >= 6 ? ToneGenerator.TONE_PROP_BEEP2 : ToneGenerator.TONE_PROP_BEEP, 80);
+                vibrateOnce(40);
                 if (engine.secondInnings && engine.playerScore > engine.computerScore) {
                     endGame();
                 }
@@ -391,11 +524,14 @@ public class MainActivity extends AppCompatActivity {
         } else {
             if (isOut) {
                 messageBox.setText("WICKET! Both chose " + val);
+                playTone(ToneGenerator.TONE_PROP_NACK, 120);
+                vibrateOnce(120);
                 handleOut();
             } else {
                 engine.computerScore += comp;
                 updateScores();
                 messageBox.setText("Computer scored " + comp + " runs");
+                playTone(ToneGenerator.TONE_PROP_BEEP, 60);
                 if (engine.secondInnings && engine.computerScore > engine.playerScore) {
                     endGame();
                 }
@@ -439,11 +575,25 @@ public class MainActivity extends AppCompatActivity {
         } else {
             endGame();
         }
+        animateShake(root);
     }
 
     private void updateScores() {
         playerScore.setText(String.valueOf(engine.playerScore));
         computerScore.setText(String.valueOf(engine.computerScore));
+        animatePulse(playerScore);
+        animatePulse(computerScore);
+    }
+
+    private void animatePulse(View view) {
+        Animation pulse = AnimationUtils.loadAnimation(this, R.anim.pulse);
+        view.startAnimation(pulse);
+    }
+
+    private void animateShake(View view) {
+        if (view == null) return;
+        Animation shake = AnimationUtils.loadAnimation(this, R.anim.shake);
+        view.startAnimation(shake);
     }
 
     private void endGame() {
@@ -451,12 +601,17 @@ public class MainActivity extends AppCompatActivity {
         if (engine.playerScore > engine.computerScore) {
             result = "win";
             messageBox.setText("YOU WIN! " + engine.playerScore + " - " + engine.computerScore);
+            playTone(ToneGenerator.TONE_PROP_ACK, 200);
+            vibrateOnce(160);
         } else if (engine.playerScore < engine.computerScore) {
             result = "loss";
             messageBox.setText("YOU LOSE! " + engine.playerScore + " - " + engine.computerScore);
+            playTone(ToneGenerator.TONE_PROP_NACK, 200);
+            vibrateOnce(160);
         } else {
             result = "tie";
             messageBox.setText("TIE! " + engine.playerScore + " - " + engine.computerScore);
+            playTone(ToneGenerator.TONE_PROP_BEEP, 140);
         }
 
         saveGameResult(result);

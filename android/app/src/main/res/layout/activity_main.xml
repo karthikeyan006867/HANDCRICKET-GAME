@@ -30,6 +30,7 @@
                 android:textStyle="bold" />
 
             <TextView
+                android:id="@+id/login_subtitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Ultimate Cricket Game"
@@ -146,6 +147,17 @@
                     android:textColor="@color/text_light" />
 
                 <Button
+                    android:id="@+id/theme_toggle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    android:background="@drawable/bg_button"
+                    android:text="Theme"
+                    android:textAllCaps="false"
+                    android:textColor="@color/text_light" />
+
+                <Button
                     android:id="@+id/leaderboard_button"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -164,6 +176,35 @@
                     android:layout_marginStart="8dp"
                     android:background="@drawable/bg_button"
                     android:text="Stats"
+                    android:textAllCaps="false"
+                    android:textColor="@color/text_light" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/toggle_row"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="10dp">
+
+                <Button
+                    android:id="@+id/sound_toggle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_button"
+                    android:text="Sound On"
+                    android:textAllCaps="false"
+                    android:textColor="@color/text_light" />
+
+                <Button
+                    android:id="@+id/vibration_toggle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    android:background="@drawable/bg_button"
+                    android:text="Vibrate On"
                     android:textAllCaps="false"
                     android:textColor="@color/text_light" />
             </LinearLayout>
@@ -215,6 +256,17 @@
                     android:layout_marginStart="6dp"
                     android:background="@drawable/bg_button_danger"
                     android:text="Hard"
+                    android:textAllCaps="false"
+                    android:textColor="@color/text_light" />
+
+                <Button
+                    android:id="@+id/nightmare_btn"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="6dp"
+                    android:background="@drawable/bg_button_danger"
+                    android:text="Nightmare"
                     android:textAllCaps="false"
                     android:textColor="@color/text_light" />
             </LinearLayout>

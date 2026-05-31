@@ -1535,6 +1535,14 @@
     };
 
     // ============ LOGIN/REGISTER ============
+    async function safeJson(response) {
+      try {
+        return await response.json();
+      } catch (error) {
+        return null;
+      }
+    }
+
     async function handleLogin() {
       const usernameInput = document.getElementById('username-input');
       const errorDisplay = document.getElementById('login-error');
@@ -1551,7 +1559,10 @@
       try {
         // Check if username exists
         const checkResponse = await fetch(`${API_URL}/check-username/${encodeURIComponent(username)}`);
-        const checkData = await checkResponse.json();
+        const checkData = await safeJson(checkResponse);
+        if (!checkResponse.ok || !checkData || typeof checkData.exists !== 'boolean') {
+          throw new Error('API unavailable');
+        }
 
         if (checkData.exists) {
           // Login existing player
@@ -1560,17 +1571,19 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username })
           });
-          
-          if (loginResponse.ok) {
-            const data = await loginResponse.json();
-            currentPlayer = data.player;
-            localStorage.setItem('currentPlayer', JSON.stringify(currentPlayer));
-            showToast(`Welcome back, ${currentPlayer.username}! 🎉`);
-            playSound('wicket');
-            vibrate([100, 50, 100]);
-            showGameScreen();
-            updatePlayerDisplay();
+          const loginData = await safeJson(loginResponse);
+
+          if (!loginResponse.ok || !loginData || !loginData.player) {
+            throw new Error('Login failed');
           }
+
+          currentPlayer = loginData.player;
+          localStorage.setItem('currentPlayer', JSON.stringify(currentPlayer));
+          showToast(`Welcome back, ${currentPlayer.username}! 🎉`);
+          playSound('wicket');
+          vibrate([100, 50, 100]);
+          showGameScreen();
+          updatePlayerDisplay();
         } else {
           // Register new player
           const registerResponse = await fetch(`${API_URL}/register`, {
@@ -1578,21 +1591,19 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username })
           });
+          const registerData = await safeJson(registerResponse);
 
-          if (registerResponse.ok) {
-            const data = await registerResponse.json();
-            currentPlayer = data.player;
-            localStorage.setItem('currentPlayer', JSON.stringify(currentPlayer));
-            showToast(`Welcome, ${currentPlayer.username}! Let's play! 🚀`);
-            playSound('start');
-            vibrate([100, 50, 100]);
-            showGameScreen();
-            updatePlayerDisplay();
-          } else {
-            const error = await registerResponse.json();
-            showError(error.error || 'Registration failed');
-            vibrate([100, 50, 100]);
+          if (!registerResponse.ok || !registerData || !registerData.player) {
+            throw new Error((registerData && registerData.error) || 'Registration failed');
           }
+
+          currentPlayer = registerData.player;
+          localStorage.setItem('currentPlayer', JSON.stringify(currentPlayer));
+          showToast(`Welcome, ${currentPlayer.username}! Let's play! 🚀`);
+          playSound('start');
+          vibrate([100, 50, 100]);
+          showGameScreen();
+          updatePlayerDisplay();
         }
       } catch (error) {
         console.error('Login error:', error);
@@ -1607,7 +1618,7 @@
           max_win_streak: 0
         };
         localStorage.setItem('currentPlayer', JSON.stringify(currentPlayer));
-        showToast(`Playing offline as ${username} 🎮`);
+        showToast(`Server unavailable — playing offline as ${username} 🎮`);
         playSound('click');
         showGameScreen();
         updatePlayerDisplay();
